@@ -1,0 +1,216 @@
+.error {
+  color: red;
+  font-size: 14px;
+}
+
+#vpass {
+  transition: background-color 0.4s ease;
+}
+#vpass.generated {
+  background-color: #e9ffe9;
+}
+
+form div {
+  margin-bottom: 12px;
+}
+
+/* Base style for inputs */
+input, select {
+  padding-right: 30px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+}
+
+/* Valid input → green border + ✔ */
+input.valid, select.valid {
+  border-color: green;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><text x='0' y='15' font-size='18' fill='green'>✔</text></svg>") no-repeat right 8px center;
+  background-size: 20px 20px;
+}
+
+/* Invalid input → red border + ✖ */
+input.invalid, select.invalid {
+  border-color: red;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><text x='0' y='15' font-size='18' fill='red'>✖</text></svg>") no-repeat right 8px center;
+  background-size: 20px 20px;
+}
+
+/* for the side bar and top bar */
+
+:root {
+      --sidebar-width: 250px;
+      --collapsed-width: 70px;
+      --navbar-height: 60px;
+      --sidebar-bg: #2a7a9f;
+      --sidebar-dark: #1f4b60;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background-color: #f5f6fa;
+      overflow-x: hidden;
+    }
+
+    /* Navbar */
+    .navbar-custom {
+      background: linear-gradient(90deg, #283e51, #485563);
+      height: var(--navbar-height);
+      z-index: 1100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      padding: 0 16px;
+    }
+
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .profile-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: white;
+    }
+
+    .rounded-circle {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: var(--navbar-height);
+      left: 0;
+      width: var(--sidebar-width);
+      height: calc(100vh - var(--navbar-height));
+      background: linear-gradient(180deg, var(--sidebar-bg), var(--sidebar-dark));
+      color: white;
+      transition: all 0.3s ease;
+      overflow-y: auto;
+      z-index: 1050;
+    }
+
+    .sidebar.collapsed {
+      width: var(--collapsed-width);
+    }
+
+    .sidebar .nav-link {
+      color: #eee;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar .nav-link:hover {
+      background-color: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    .sidebar .nav-link i {
+      font-size: 1.2rem;
+      width: 24px;
+      text-align: center;
+    }
+
+    .sidebar .submenu {
+      display: none;
+      padding-left: 40px;
+      background-color: rgba(255,255,255,0.05);
+    }
+
+    .nav-item.open .submenu {
+      display: block;
+    }
+
+    /* Collapsed */
+    .sidebar.collapsed .nav-link span,
+    .sidebar.collapsed .submenu {
+      display: none;
+    }
+
+    /* Overlay for mobile */
+    .overlay {
+      position: fixed;
+      top: var(--navbar-height);
+      left: 0;
+      width: 100%;
+      height: calc(100vh - var(--navbar-height));
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: calc(var(--navbar-height) + 20px) 30px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .main-content.expanded {
+      margin-left: var(--collapsed-width);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .sidebar {
+        left: -250px;
+      }
+      .sidebar.active {
+        left: 0;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+    }
+
+/* for the counter function on dashboard */
+
+.counter-box {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-top: 4px solid #2a7a9f;
+}
+
+.counter-box i {
+  font-size: 2.5rem;
+  color: #2a7a9f;
+  margin-bottom: 10px;
+}
+
+.counter-box h3 {
+  font-size: 2rem;
+  margin: 0;
+  color: #333;
+  font-weight: bold;
+}
+
+.counter-box p {
+  color: #666;
+  margin-top: 5px;
+  font-size: 1rem;
+}
+
+.counter-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+

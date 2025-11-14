@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Society Maintenance Portal</title>
+
+  <!--Bootstrap CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+     <!--Custom CSS -->
+  <link href="{% static 'css/mystyle.css' %}" rel="stylesheet" type="text/css">
+
+
+  <style>
+    body {
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .form-container {
+      background: #fff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-control {
+      border-radius: 10px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+      border-color: #0d6efd;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+  <div class="row w-100">
+    <div class="col-sm-6 offset-sm-3 fade-in">
+        <h1><strong>WELCOME TO SEVAK SAHYADRICHE !</strong></h1>
+        <h1 class="text-center"><strong>Login</strong></h1>
+      <div class="form-container text-center">
+
+        <!--Login Form -->
+        <form action="" method="post">
+            {% csrf_token %}
+          <input type="email" placeholder="Enter your email" name="email" class="form-control" style="height:42px" required><br>
+          <input type="password" placeholder="Enter your password" name="password" class="form-control" style="height:42px" required>
+
+
+       <br><br>
+          <button type="submit" class="btn btn-success" style="height: 50px; width: 100px;">Login</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS Bundle (includes Popper for modal) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,49 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}Add Role{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+  <h2 class="mb-4">Add Role</h2>
+
+   {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <table class="table table-striped table-bordered align-middle text-center mt-3">
+
+    <tr>
+      <th>
+        Sr. No.
+      </th>
+      <th>
+        Role Name
+      </th>
+      <th>
+        Create Time
+      </th>
+      <th>
+        Action
+      </th>
+    </tr>
+
+  {% for role in roles %}
+    <tr>
+      <td>{{ forloop.revcounter }}</td>
+      <td>{{role.role_name}}</td>
+      <td>{{role.role_regi_datetime}}</td>
+      <td>
+        <a href="{% url 'update_Role' role.id %}" class="btn btn-sm btn-secondary">Edit</a>
+        <a href="" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+      </td>
+    </tr>
+  {% endfor %}
+  </table>
+
+</div>
+
+{% endblock %}

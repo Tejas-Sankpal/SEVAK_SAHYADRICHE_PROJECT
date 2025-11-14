@@ -1,0 +1,54 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}Assigned Tasks{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <h1>See Assigned Tasks</h1>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <table class="table table-striped table-bordered mt-3">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Assigned Group</th>
+        <th>Task Created At</th>
+        <th>Task Status</th>
+        <th>Rejection Reason</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in task_details %}
+      <tr>
+        <td>{{ forloop.revcounter }}</td>
+        <td>{{ task.task_title }}</td>
+        <td>{{ task.Group.group_name }}</td>
+        <td>{{ task.task_created_at|date:"d M Y" }} {{ task.task_created_at|time:"H:i" }}</td>
+        <td>{{ task.task_status }}</td>
+        <td>{{ task.task_reject_reason }}</td>
+        <td>
+          <a href="{% url 'task_update' task.id %}" class="btn btn-sm btn-secondary">Edit</a>
+          <a href="{% url 'task_delete' task.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="9" class="text-center">No tasks found</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/myjs_script.js' %}"></script>
+{% endblock %}

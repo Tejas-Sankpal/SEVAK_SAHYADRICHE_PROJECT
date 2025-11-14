@@ -1,0 +1,107 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}Add Volunteer{% endblock %}
+
+  <!-- Custom CSS -->
+  <link href="{% static 'css/mystyle.css' %}" rel="stylesheet" type="text/css">
+
+{% block content %}
+<div class="container-fluid">
+  <h2 class="mb-4">Add Volunteer</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form id="volunteerForm" action="{% url 'volunteer_save' %}" method="post"  onsubmit="return validateForm()" novalidate>
+    {% csrf_token %}
+    <div class="mb-3">
+      <label>Volunteer Name:</label>
+      <input type="text" name="vname" class="form-control">
+      <small id="volNameError" class="error"></small>
+    </div>
+
+    <div class="mb-3">
+      <label>Email:</label>
+      <input type="email" name="vemail" class="form-control">
+      <small id="volEmailError" class="error"></small>
+    </div>
+
+    <div class="mb-3">
+      <label>Contact:</label>
+      <input type="text" name="vcon" class="form-control">
+      <small id="volContactError" class="error"></small>
+    </div>
+
+    <div class="mb-3 position-relative">
+      <label>Password:</label>
+      <div class="input-group">
+        <input type="text" id="vpass" name="vpass" class="form-control" readonly>
+        <button type="button" class="btn btn-outline-success" onclick="copyPassword()">Copy</button>
+      </div>
+      <small id="volPasswordError" class="error"></small>
+    </div>
+
+
+    <div class="mb-3">
+      <label>Role:</label>
+      <select name="vrole" class="form-control">
+        <option value="">--Select Role--</option>
+        {% for role in roles %}
+          <option value="{{ role.id }}">{{ role.role_name }}</option>
+        {% endfor %}
+      </select>
+      <small id="volRoleError" class="error"></small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Volunteer</button>
+  </form>
+
+  <br><br>
+  <h3>Volunteers List</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Contact No.</th>
+        <th>Password</th>
+        <th>Role</th>
+        <th>Add Time</th>
+        <th>Update Time</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in vr_data %}
+      <tr>
+        <td>{{ forloop.revcounter }}</td>
+        <td>{{ i.volunteer_name }}</td>
+        <td>{{ i.volunteer_email }}</td>
+        <td>{{ i.volunteer_contact }}</td>
+        <td>{{ i.volunteer_pass }}</td>
+        <td>{{ i.volunteer_role }}</td>
+        <td>{{ i.volunteer_regi_datetime }}</td>
+        <td>{{ i.volunteer_update_regi_datetime }}</td>
+        <td>
+          <a href="{% url 'volunteer_update' i.id %}" class="btn btn-sm btn-secondary">Edit</a>
+          <a href="{% url 'volunteer_delete' i.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="9" class="text-center">No Volunteers found</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/myjs_script.js' %}?v={{ timestamp }}"></script>
+{% endblock %}

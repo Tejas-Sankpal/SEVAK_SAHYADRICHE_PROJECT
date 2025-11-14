@@ -1,0 +1,185 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}Groups List{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <h2>Groups List</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <table class="table table-striped text-center align-middle mt-3">
+        <thead>
+            <tr>
+                <th>Group Id</th>
+                <th>Group Name</th>
+                <th>Group Leader Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in group %}
+            <tr>
+                <td>{{ forloop.revcounter }}</td>
+                <td>{{ i.group_name }}</td>
+                <td>{{ i.leader }}</td>
+                <td>
+                    <div class="dropdown">
+                        <button class="btn btn-link text-dark p-0" data-bs-toggle="dropdown">&#8942;</button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item open-modal"
+                                   data-mode="view"
+                                   data-id="{{ i.id }}"
+                                   data-name="{{ i.group_name }}"
+                                   data-leader="{{ i.leader }}"
+                                   data-members="{% for m in i.volunteers_group_name.all %}{{ m.volunteer.volunteer_name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                                   data-groupcreated="{{ i.group_regi_date }}"
+                                   data-groupupdated="{{ i.group_update_regi_date }}">
+                                    View Group
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item open-modal"
+                                   data-mode="edit"
+                                   data-id="{{ i.id }}"
+                                   data-name="{{ i.group_name }}"
+                                   data-leader="{{ i.leader }}"
+                                   data-members="{% for m in i.volunteers_group_name.all %}{{ m.volunteer.volunteer_name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                                    Edit Group
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'add_members' group_id=i.id %}">Add Members</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'group_delete' i.id %}" class="dropdown-item" onclick="return confirm('Are you sure ?')">Delete Group</a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">No Group found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for View/Edit -->
+<div class="modal fade" id="groupModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- View Section -->
+                <div id="viewSection">
+                    <p><strong>Group Name:</strong> <span id="viewName"></span></p>
+                    <p><strong>Leader:</strong> <span id="viewLeader"></span></p>
+                    <p><strong>Members: </strong><span id="viewMembers"></span></p>
+                    <p><strong>Group Created: </strong><span id="viewGroupCreatedDate"></span></p>
+                    <p><strong>Group Updated: </strong><span id="viewGroupUpdatedDate"></span></p>
+                </div>
+
+                <!-- Edit Section -->
+                <form id="editSection" method="POST" action="/update_group/" class="d-none">
+                    {% csrf_token %}
+                    <input type="hidden" name="id" id="editId">
+
+                    <div class="mb-3">
+                        <label class="form-label">Group Name</label>
+                        <input type="text" class="form-control" name="group_nm" id="editName" required>
+                        <div id="GroupNameError" class="error"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editLeader">Leader Name:</label>
+                        <select name="vid" id="editLeader" class="form-control" required>
+                            {% for v in group_leaders %}
+                                <option value="{{ v.id }}">{{ v.volunteer_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div id="GroupLeaderError" class="error"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Members</label>
+                        <textarea class="form-control" name="members" id="members" readonly rows="3"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- ✅ Bootstrap JS (must be the BUNDLE version) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ✅ Your custom JS code -->
+<script>
+document.querySelectorAll(".open-modal").forEach(btn => {
+    btn.addEventListener("click", function () {
+        let mode = this.dataset.mode;
+        let id = this.dataset.id;
+        let name = this.dataset.name;
+        let leader = this.dataset.leader;
+        let member = this.dataset.members;
+        let group_create = this.dataset.groupcreated;
+        let group_update = this.dataset.groupupdated;
+
+        if (mode === "view") {
+            document.getElementById("modalTitle").textContent = "View Group";
+            document.getElementById("viewSection").classList.remove("d-none");
+            document.getElementById("editSection").classList.add("d-none");
+
+            document.getElementById("viewName").textContent = name;
+            document.getElementById("viewLeader").textContent = leader;
+            document.getElementById("viewMembers").textContent = member;
+            document.getElementById("viewGroupCreatedDate").textContent = group_create;
+            document.getElementById("viewGroupUpdatedDate").textContent = group_update;
+        } else if (mode === "edit") {
+            document.getElementById("modalTitle").textContent = "Edit Group";
+            document.getElementById("editSection").classList.remove("d-none");
+            document.getElementById("viewSection").classList.add("d-none");
+
+            document.getElementById("editId").value = id;
+            document.getElementById("editName").value = name;
+
+            let leaderDropdown = document.getElementById("editLeader");
+            for (let i = 0; i < leaderDropdown.options.length; i++) {
+                if (leaderDropdown.options[i].text === leader) {
+                    leaderDropdown.options[i].selected = true;
+                    break;
+                }
+            }
+            document.getElementById("members").value = member;
+        }
+
+        let modal = new bootstrap.Modal(document.getElementById("groupModal"));
+        modal.show();
+    });
+});
+</script>
+
+<!-- ✅ Link your custom JS last -->
+<script src="{% static 'js/myjs_script.js' %}"></script>
+{% endblock %}
+

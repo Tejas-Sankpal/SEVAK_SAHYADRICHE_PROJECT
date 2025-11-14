@@ -1,0 +1,322 @@
+{% load static %}
+
+<style>
+/* ------------------------------
+   NAVBAR
+------------------------------ */
+.navbar {
+
+    padding: 10px 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+#notifBtn {
+    background: none;
+    border: none;
+    color: black;
+    font-size: 22px;
+    cursor: pointer;
+    position: relative;
+}
+
+/* ------------------------------
+   BADGE
+------------------------------ */
+#notifCount {
+    background: red;
+    color: white;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 50%;
+    min-width: 18px;
+    text-align: center;
+    position: absolute;
+    top: -6px;
+    right: -10px;
+}
+
+/* ------------------------------
+   NOTIFICATION PANEL (PROFESSIONAL)
+------------------------------ */
+#notifPanel {
+    width: 400px;
+    max-height: 450px;
+    background: #f5f7fa;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    padding: 0;
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 15px;
+    z-index: 2000;
+
+    /* Animation */
+    transform-origin: top right;
+    transform: scale(0.95);
+    opacity: 0;
+    transition: all 0.18s ease-out;
+
+    /* Shadow */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+#notifPanel.open {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* ------------------------------
+   HEADER
+------------------------------ */
+#notifHeader {
+    font-weight: 600;
+    padding: 14px 18px;
+    border-bottom: 1px solid #eee;
+    font-size: 15px;
+    color: #1d3557;
+}
+
+/* ------------------------------
+   LIST AREA
+------------------------------ */
+#notifList {
+    max-height: 380px;
+    overflow-y: auto;
+}
+
+/* ------------------------------
+   INDIVIDUAL NOTIFICATION ITEM
+------------------------------ */
+.notification-item {
+    padding: 14px 18px;
+    border-bottom: 1px solid #f2f2f2;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.notification-item:hover,
+.notification-item:focus {
+    background: #eef2f5;
+}
+
+.notification-title {
+    font-weight: 600;
+    margin-bottom: 3px;
+    color: #1d3557;
+}
+
+.notification-item div {
+    color: #2c3e50;
+}
+
+.timestamp {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+#notifList::-webkit-scrollbar-track {
+    background: #e6e9ef;     /* Light grey track */
+    border-radius: 10px;
+}
+
+/* ------------------------------
+   RESPONSIVE
+------------------------------ */
+@media (max-width: 600px) {
+    #notifPanel {
+        width: auto;
+        left: 10px;
+        right: 10px;
+        border-radius: 10px;
+    }
+}
+</style>
+
+<nav class="navbar navbar-dark navbar-expand-lg navbar-custom fixed-top">
+
+    <button class="toggle-btn" onclick="toggleSidebar()">
+        <i class="fa fa-bars"></i>
+    </button>
+
+    <div class="ms-auto profile-area">
+
+        <!-- Notification Button -->
+        <button id="notifBtn" aria-haspopup="true" aria-expanded="false" aria-controls="notifPanel">
+            🔔
+            <span id="notifCount">0</span>
+        </button>
+
+        <!-- Notification Panel -->
+        <div id="notifPanel" tabindex="-1">
+
+            <!-- Header -->
+            <div id="notifHeader">Notifications</div>
+
+            <!-- List -->
+            <div id="notifList"></div>
+        </div>
+
+        <span>Admin</span>
+
+        {% if session %}
+            <img src="/photo/{{ session }}" class="rounded-circle" alt="Profile">
+        {% else %}
+            <img src="{% static 'default.png' %}" class="rounded-circle" alt="Default">
+        {% endif %}
+
+        <a href="/logout" class="btn btn-danger btn-sm">
+            <i class="fa fa-sign-out-alt"></i>
+        </a>
+
+    </div>
+</nav>
+
+
+<script>
+// ------------------------------
+// TIME FORMATTER
+// ------------------------------
+const timeAgo = (timestamp) => {
+    const diff = (new Date() - new Date(timestamp)) / 1000;
+
+    if (diff < 60) return `${Math.floor(diff)}s`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
+    return `${Math.floor(diff / 86400)}d`;
+};
+
+
+// ------------------------------
+// RENDER NOTIFICATION
+// ------------------------------
+function renderNotification({ id, title, message, createdAt, read }) {
+    const item = document.createElement("div");
+    item.className = "notification-item";
+    item.tabIndex = 0;
+    item.dataset.id = id;
+
+    if (read) item.style.opacity = "0.5";
+
+    item.innerHTML = `
+        <div class="notification-title">${title}</div>
+        <div>${message}</div>
+        <div class="timestamp">${timeAgo(createdAt)}</div>
+    `;
+
+    item.addEventListener("click", () => markAsRead(id));
+    item.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") markAsRead(id);
+    });
+
+    document.getElementById("notifList").appendChild(item);
+}
+
+
+// ------------------------------
+// LOAD NOTIFICATIONS FROM SERVER
+// ------------------------------
+async function loadNotifications() {
+    try {
+        const res = await fetch("/notifications/load/");
+        const { notifications = [] } = await res.json();
+
+        const notifList = document.getElementById("notifList");
+        const notifCount = document.getElementById("notifCount");
+
+        notifList.innerHTML = "";
+
+        notifCount.textContent = notifications.filter(n => !n.read).length;
+
+        notifications.forEach(renderNotification);
+
+    } catch (err) {
+        console.error("Error loading notifications:", err);
+    }
+}
+
+
+// ------------------------------
+// MARK AS READ
+// ------------------------------
+async function markAsRead(id) {
+    try {
+        await fetch("/notifications/read/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id })
+        });
+
+        loadNotifications();
+    } catch (err) {
+        console.error("Error marking as read:", err);
+    }
+}
+
+
+// ------------------------------
+// PANEL OPEN/CLOSE ANIMATION
+// ------------------------------
+const notifBtn = document.getElementById("notifBtn");
+const notifPanel = document.getElementById("notifPanel");
+
+notifBtn.addEventListener("click", () => {
+    const isOpen = notifPanel.classList.contains("open");
+
+    if (isOpen) {
+        notifPanel.classList.remove("open");
+        notifPanel.style.display = "none";
+    } else {
+        notifPanel.style.display = "block";
+
+        setTimeout(() => {
+            notifPanel.classList.add("open");
+        }, 10);
+
+        loadNotifications();
+        trapFocus(notifPanel);
+    }
+});
+
+document.addEventListener("click", (e) => {
+    if (!notifPanel.contains(e.target) && !notifBtn.contains(e.target)) {
+        notifPanel.classList.remove("open");
+        notifPanel.style.display = "none";
+    }
+});
+
+
+// ------------------------------
+// FOCUS TRAP
+// ------------------------------
+function trapFocus(panel) {
+    const focusable = panel.querySelectorAll("[tabindex]");
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    panel.addEventListener("keydown", (e) => {
+        if (e.key !== "Tab") return;
+
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    });
+
+    first.focus();
+}
+
+
+// ------------------------------
+// INITIAL LOAD
+// ------------------------------
+document.addEventListener("DOMContentLoaded", loadNotifications);
+</script>

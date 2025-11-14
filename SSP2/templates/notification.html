@@ -1,0 +1,72 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}Give Notification{% endblock %}
+{% block content%}
+
+<div class="container-fluid">
+  <h1>Send Notification</h1>
+
+      {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <form action="{% url 'send_notification' %}" method="post">
+
+        {% csrf_token%}
+
+        <div class="mb-3">
+          <label>Notification Type:</label>
+          <select name="notifytype" id="type" class="form-control">
+            <option value="">--Select Type--</option>
+            <option value="Casual">Casual Notification</option>
+            <option value="Meeting">Meeting Link</option>
+          </select>
+          <small id="NotifyType" class="error"></small>
+        </div>
+
+        <div class="mb-3">
+          <label>Notification Title:</label>
+          <input type="text" name="notifytitle" class="form-control">
+          <small id="NotifyTitle" class="error"></small>
+        </div>
+
+        <div class="mb-3">
+          <label>Description:</label>
+          <textarea name="notifydesc" class="form-control" rows="5"></textarea>
+          <small id="NotifyDesc" class="error"></small>
+        </div>
+
+        <div class="mb-3" id="link_field">
+          <label>Meeting Link:</label>
+          <input type="text" name="meetinglink" class="form-control">
+          <small id="MeetingLink" class="error"></small>
+        </div>
+
+        <button type="submit" class="btn btn-success">Send</button>
+
+      </form>
+</div>
+
+<script>
+// hide/show link field based on type
+document.addEventListener('DOMContentLoaded', function() {
+    const typeSelect = document.getElementById('type');
+    const linkField = document.getElementById('link_field');
+
+    function toggleLinkField() {
+        if (typeSelect.value === 'Casual') {
+            linkField.style.display = 'none';
+        } else if (typeSelect.value === 'Meeting') {
+            linkField.style.display = 'block';
+        }
+    }
+
+    typeSelect.addEventListener('change', toggleLinkField);
+    toggleLinkField(); // run on page load
+});
+</script>
+
+{% endblock %}

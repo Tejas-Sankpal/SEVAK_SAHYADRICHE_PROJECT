@@ -1,0 +1,80 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}Add Members{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2>Add Members to: <span class="text-primary">{{ group.group_name }}</span></h2>
+    <p>Group Leader: <strong>{{ group.leader.volunteer_name }}</strong></p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <hr>
+
+    <h4>Available Volunteers</h4>
+    <table class="table table-striped table-bordered align-middle text-center mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Current Group</th>
+                <th>Leader</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in volunteers %}
+            <tr>
+                <td>{{ forloop.revcounter }}</td>
+                <td>{{ data.volunteer_obj.volunteer_name }}</td>
+                <td>{{ data.volunteer_obj.volunteer_email }}</td>
+                <td>{{ data.volunteer_obj.volunteer_role }}</td>
+                <td>{{ data.current_group }}</td>
+                <td>{{ data.current_leader }}</td>
+                <td>
+                    {% if data.is_in_group %}
+                        <button class="btn btn-secondary btn-sm" disabled>Already Assigned</button>
+                        <a href="{% url 'remove_volunteer' group.id data.volunteer_obj.id %}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Remove this volunteer?')">
+                           Remove
+                        </a>
+                    {% else %}
+                        <form action="{% url 'assign_volunteer' group.id data.volunteer_obj.id %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm">Add to Group</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No Members found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-4">
+        <a href="{% url 'group_see' %}" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-arrow-left-circle"></i> Back
+        </a>
+        <a href="{% url 'send_group_list_leader' group.id %}" class="btn btn-primary">
+            <i class="bi bi-envelope"></i> Send Mail to Leader
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/myjs_script.js' %}"></script>
+{% endblock %}

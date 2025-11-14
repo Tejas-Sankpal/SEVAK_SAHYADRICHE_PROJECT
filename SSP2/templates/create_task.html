@@ -1,0 +1,94 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}Add Task{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <h1>Add Task</h1>
+  <br>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+  <br>
+
+  <form action="{% url 'assign_task_to_leader' %}" method="post" id="AdminTaskAssign">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label for="task_title">Task Title:</label>
+      <input type="text" name="task_title" class="form-control">
+      <div id="taskTitleError" class="error"></div>
+    </div>
+
+    <div class="mb-3">
+      <label for="task_description">Task Description:</label>
+      <textarea name="task_description" class="form-control" rows="3"></textarea>
+      <div id="taskDescError" class="error"></div>
+    </div>
+
+    <div class="mb-3">
+      <label for="group_id">Select Group:</label>
+      <select id="group_id" name="group_id" class="form-control">
+        <option value="">--Select Group--</option>
+        {% for group in group_name %}
+          <option value="{{ group.id }}">{{ group.group_name }}</option>
+        {% endfor %}
+      </select>
+      <div id="taskGroupIdError" class="error"></div>
+    </div>
+
+    <div class="mb-3">
+      <label for="leader_id">Select Leader:</label>
+      <select id="leader_id" name="leader_id" class="form-control">
+        <option value="">--Select Leader--</option>
+        {% for leader in leader_name %}
+          <option value="{{ leader.id }}">{{ leader.volunteer_name }}</option>
+        {% endfor %}
+      </select>
+      <div id="taskLeaderIdError" class="error"></div>
+    </div>
+
+    <input type="hidden" name="task_status" value="Pending">
+
+    <button type="submit" class="btn btn-primary mt-3">Create Task</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+//Ajax for leader & group dropdown sync
+document.addEventListener("DOMContentLoaded", function() {
+  const groupSelect = document.getElementById("group_id");
+  const leaderSelect = document.getElementById("leader_id");
+
+  groupSelect.addEventListener("change", function() {
+    const groupId = this.value;
+    if (!groupId) return;
+    fetch(`/get_leader_by_group/${groupId}/`)
+      .then(response => response.json())
+      .then(data => {
+        leaderSelect.innerHTML = `<option value="${data.leader_id}">${data.leader_name}</option>`;
+      })
+      .catch(error => console.error("Error fetching leader:", error));
+  });
+
+  leaderSelect.addEventListener("change", function() {
+    const leaderId = this.value;
+    if (!leaderId) return;
+    fetch(`/get_group_by_leader/${leaderId}/`)
+      .then(response => response.json())
+      .then(data => {
+        groupSelect.innerHTML = `<option value="${data.group_id}">${data.group_name}</option>`;
+      })
+      .catch(error => console.error("Error fetching group:", error));
+  });
+});
+</script>
+
+<script src="{% static 'js/myjs_script.js' %}"></script>
+{% endblock %}

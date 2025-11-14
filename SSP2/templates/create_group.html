@@ -1,0 +1,59 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}Add Group{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1>Add Group</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Form to create a new group -->
+    <form id="GroupCreate" action="{% url 'add_new_group' %}" method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="group_nm">Group Name:</label>
+            <input type="text" name="group_nm" class="form-control">
+            <div id="GroupNameError" class="error"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="vid">Leader Name:</label>
+            <select name="vid" id="vid" class="form-control" onchange="GetVolunteerName()">
+                <option value="">--Select Leader--</option>
+                {% for vol in volunteer %}
+                    <option value="{{ vol.id }}">{{ vol.volunteer_name }}</option>
+                {% endfor %}
+            </select>
+            <div id="GroupLeaderError" class="error"></div>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Create Group</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// AJAX to get volunteer name by ID
+
+function GetVolunteerName() {
+    const vol_id = document.getElementById("vid").value;
+    if (vol_id === "") return;
+
+    fetch(`/get_volunteer_name/?id=${vol_id}`)
+        .then(res => res.json())
+        .then(data => {
+            // You can set the value to some hidden/input if needed
+            console.log("Leader Name:", data.name);
+        })
+        .catch(error => console.error("Error fetching leader name:", error));
+}
+</script>
+<script src="{% static 'js/myjs_script.js' %}"></script>
+{% endblock %}

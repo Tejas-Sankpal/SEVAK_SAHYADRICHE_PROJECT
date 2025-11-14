@@ -1,0 +1,47 @@
+from django.contrib import admin
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # only view page urls
+    path('', views.home, name='dashboard'),
+    path('set_volunteer/', views.set_volunteer, name='set_volunteer'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('volunteer_update/<int:id>/', views.volunteer_update, name='volunteer_update'),
+    path('group_dashboard/', views.group_dashboard, name='group_dashboard'),
+    path('create_group/', views.create_group, name='create_group'),
+    path('group_see/', views.group_see, name='group_see'),
+    path('group_see/<int:group_id>/add-members/', views.add_members_view, name='add_members'),
+    path('see_members_with_group/', views.view_members, name='view_members'),
+    path('get_leader_by_group/<int:group_id>/', views.get_leader_by_group, name='get_leader_by_group'),
+    path('get_group_by_leader/<int:leader_id>/', views.get_group_by_leader, name='get_group_by_leader'),
+    path('task_dashboard/', views.task_dashboard, name='task_dashboard'),
+    path('create_task/', views.create_task, name='create_task'),
+    path('see_assigned_task', views.see_assigned_task, name='see_assigned_task'),
+    path('task_update/<int:task_id>/', views.task_update, name='task_update'),
+    path('set_role/', views.set_role, name= 'set_role'),
+    path('see_role/', views.see_role, name='see_role'),
+    path('update_Role/<int:role_id>', views.update_Role, name='update_Role'),
+    path('notification/', views.notification, name= 'notification'),
+
+
+
+    # logic urls
+    path('volunteer_save/', views.volunteer_save, name='volunteer_save'),
+    path('volunteer_delete/<int:id>/', views.volunteer_delete, name='volunteer_delete'),
+    path('save_updated_volunteer/', views.save_updated_volunteer, name='save_updated_volunteer'),
+    path('add_new_group/', views.add_new_group, name='add_new_group'),
+    path('group_delete/<int:id>/', views.group_delete, name='group_delete'),
+    path('update_group/', views.update_group, name='update_group'),
+    path('group_see/<int:group_id>/assign/<int:volunteer_id>/', views.assign_volunteer_to_group, name='assign_volunteer'),
+    path('group_see/<int:group_id>/remove/<int:volunteer_id>/', views.remove_volunteer_from_group, name='remove_volunteer'),
+    path('group_see/<int:group_id>/assign/send_group_list_leader/', views.send_group_list_leader, name='send_group_list_leader'),
+    path('assign_task_to_leader/', views.assign_task_to_leader, name='assign_task_to_leader'),
+    path('task_delete/<int:task_id>/', views.task_delete, name='task_delete'),
+    path('update_assign_task_to_leader/', views.update_assign_task_to_leader, name='update_assign_task_to_leader'),
+    path('save_role/', views.save_role, name='save_role'),
+    path('save_updated_role/', views.save_updated_role, name='save_updated_role'),
+    path('send_notification', views.send_notification, name= 'send_notification'),
+    path('notifications/load/', views.load_notifications, name= 'load_notifications'),
+    path('notifications/read/', views.mark_notification_read, name= 'mark_notification_read'),
+]
