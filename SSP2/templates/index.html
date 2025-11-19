@@ -2,75 +2,235 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Society Maintenance Portal</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Professional Login Page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <!--Bootstrap CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
 
-     <!--Custom CSS -->
-  <link href="{% static 'css/mystyle.css' %}" rel="stylesheet" type="text/css">
+  body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background: #eef1f6;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
+  .main-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding: 20px;
+    max-width: 1100px;
+    width: 100%;
+  }
 
-  <style>
-    body {
-      background: linear-gradient(to right, #e0eafc, #cfdef3);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+  .image-box {
+    width: 420px;
+    height: 420px;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
+  }
+  .image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
-    .form-container {
-      background: #fff;
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    }
+  .divider-line {
+    width: 2px;
+    height: 400px;
+    background: #cfd6e2;
+  }
 
-    .form-control {
-      border-radius: 10px;
-      transition: box-shadow 0.3s ease;
-    }
+  .login-section {
+    width: 420px;
+    text-align: center;
+  }
 
-    .form-control:focus {
-      box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
-      border-color: #0d6efd;
-    }
+  .top-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 25px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #fff;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
+  }
+  .top-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 
-    h1 {
-      font-size: 2.2rem;
-      font-weight: bold;
-    }
-  </style>
+  .login-box {
+    background: #fff;
+    padding: 30px 25px;
+    border-radius: 15px;
+    box-shadow: 0px 5px 25px rgba(0,0,0,0.12);
+  }
+
+  .login-box h2 {
+    font-size: 26px;
+    margin-bottom: 5px;
+    color: #2c3e50;
+  }
+
+  .login-box p {
+    font-size: 14px;
+    color: #68727f;
+    margin-bottom: 20px;
+  }
+
+  .form-group { margin-bottom: 18px; text-align: left; }
+
+  input.form-control {
+    width: 100%;
+    height: 48px;
+    border: 2px solid #dbe2eb;
+    border-radius: 10px;
+    padding: 0 14px;
+    font-size: 14px;
+    background: #fafbfc;
+    outline: none;
+  }
+
+  input.form-control:focus {
+    border-color: #4a90e2;
+    background: #fff;
+  }
+
+  .password-wrapper { position: relative; }
+
+  .password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #718096;
+  }
+
+  .login-btn {
+    width: 100%;
+    height: 48px;
+    margin-top: 10px;
+    background: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .login-btn:hover {
+    background: #357abd;
+  }
+
+  /* Responsive */
+  @media(max-width: 968px) {
+    .main-wrapper { flex-direction: column; gap: 0; }
+    .image-box { display: none; }
+    .divider-line { display: none; }
+    .login-section { width: 90%; }
+  }
+
+  @media(max-width: 480px) {
+    input.form-control, .login-btn { height: 44px; font-size: 13px; }
+    .top-icon { width: 100px; height: 100px; }
+    .login-box { padding: 25px 20px; }
+    .login-box h2 { font-size: 22px; }
+  }
+</style>
+
 </head>
+
 <body>
 
+<div class="main-wrapper">
 
-
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-  <div class="row w-100">
-    <div class="col-sm-6 offset-sm-3 fade-in">
-        <h1><strong>WELCOME TO SEVAK SAHYADRICHE !</strong></h1>
-        <h1 class="text-center"><strong>Login</strong></h1>
-      <div class="form-container text-center">
-
-        <!--Login Form -->
-        <form action="" method="post">
-            {% csrf_token %}
-          <input type="email" placeholder="Enter your email" name="email" class="form-control" style="height:42px" required><br>
-          <input type="password" placeholder="Enter your password" name="password" class="form-control" style="height:42px" required>
-
-
-       <br><br>
-          <button type="submit" class="btn btn-success" style="height: 50px; width: 100px;">Login</button>
-        </form>
-
-      </div>
-    </div>
+  <!-- LEFT IMAGE -->
+  <div class="image-box">
+    <img src="{% static 'images/bg.jpg' %}" alt="Background">
   </div>
+
+  <!-- VERTICAL LINE -->
+  <div class="divider-line"></div>
+
+  <!-- RIGHT LOGIN BOX -->
+  <div class="login-section">
+
+    <div class="top-icon">
+      <img src="{% static 'images/logo.png' %}" alt="Logo">
+    </div>
+
+    <div class="login-box">
+      <h2>Login</h2>
+      <p>Sevak Sahyadriche Work Portal</p>
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <input type="email" name="email" class="form-control" placeholder="Email" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <div class="password-wrapper">
+            <input type="password" name="password" id="password" class="form-control password-input" placeholder="Password" required autocomplete="current-password">
+            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+
+      </form>
+    </div>
+
+  </div>
+
 </div>
 
-<!-- Bootstrap JS Bundle (includes Popper for modal) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const passwordInput = document.getElementById('password');
+  const passwordToggle = document.getElementById('passwordToggle');
 
+  passwordToggle.addEventListener('click', function() {
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+
+    // Toggle icon
+    if (type === 'text') {
+      passwordToggle.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+          <line x1="1" y1="1" x2="23" y2="23"></line>
+        </svg>
+      `;
+    } else {
+      passwordToggle.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      `;
+    }
+  });
+</script>
 </body>
 </html>

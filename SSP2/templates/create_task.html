@@ -20,19 +20,19 @@
 
     <div class="mb-3">
       <label for="task_title">Task Title:</label>
-      <input type="text" name="task_title" class="form-control">
+      <input type="text" name="task_title" class="form-control" required>
       <div id="taskTitleError" class="error"></div>
     </div>
 
     <div class="mb-3">
       <label for="task_description">Task Description:</label>
-      <textarea name="task_description" class="form-control" rows="3"></textarea>
+      <textarea name="task_description" class="form-control" rows="3" required></textarea>
       <div id="taskDescError" class="error"></div>
     </div>
 
     <div class="mb-3">
       <label for="group_id">Select Group:</label>
-      <select id="group_id" name="group_id" class="form-control">
+      <select id="group_id" name="group_id" class="form-control" >
         <option value="">--Select Group--</option>
         {% for group in group_name %}
           <option value="{{ group.id }}">{{ group.group_name }}</option>
@@ -91,4 +91,6 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 
 <script src="{% static 'js/myjs_script.js' %}"></script>
+
 {% endblock %}
+

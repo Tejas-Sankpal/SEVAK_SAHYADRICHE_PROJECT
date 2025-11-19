@@ -1,12 +1,12 @@
 {% extends 'dashboard.html' %}
 {% load static %}
 
-{% block title %}Add Role{% endblock %}
+{% block title %}see role{% endblock %}
 
 {% block content %}
 
 <div class="container-fluid">
-  <h2 class="mb-4">Add Role</h2>
+  <h2 class="mb-4">See Role</h2>
 
    {% if messages %}
     {% for message in messages %}
@@ -38,7 +38,7 @@
       <td>{{role.role_regi_datetime}}</td>
       <td>
         <a href="{% url 'update_Role' role.id %}" class="btn btn-sm btn-secondary">Edit</a>
-        <a href="" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+        <a href="{% url 'delete_role' role.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
       </td>
     </tr>
   {% endfor %}
@@ -46,4 +46,8 @@
 
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/myjs_script.js' %}"></script>
 {% endblock %}

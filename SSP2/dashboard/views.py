@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.http import JsonResponse
+from django.template.context_processors import request
 from django.utils.timezone import now
 from django.utils import timezone
 from django.contrib import messages
@@ -160,8 +161,16 @@ def see_assigned_task(request):
     return render(request,"see_assigned_task.html", {"task_details":task_details})
 
 def task_update(request, task_id):
-    task_details = Task_management.objects.all()
-    return render(request, "task_update.html", {"task_details": task_details})
+    leader_name = Volunteer.objects.filter(volunteer_role__role_name="Group Leader")
+    group_name = Groupcreate.objects.all()
+    data = Task_management.objects.filter(id= task_id)
+
+    context = {
+        "leader_name": leader_name,
+        "group_name": group_name,
+        "data": data
+    }
+    return render(request, "task_update.html", context)
 
 def set_role(request):
     return render(request,"set_role.html")
@@ -176,6 +185,10 @@ def update_Role(request, role_id):
 
 def notification(request):
     return render(request, "notification.html")
+
+def see_notification(request):
+    notification_data= Notification.objects.all().order_by('-id')
+    return render(request,"see_notification.html",{"notify_data":notification_data})
 
 
 
@@ -248,7 +261,21 @@ def save_updated_volunteer(request):
         vpass = request.POST["vpass"]
         vrole = request.POST["vrole"]
 
+        volunteer = Volunteer.objects.get(id=vid)
         role_obj = Role_set.objects.get(role_name=vrole)
+
+        # used to block changing the role leader -> any other role
+        if Groupcreate.objects.filter(leader=volunteer).exists():
+
+            # check if role actually changed
+            if volunteer.volunteer_role.id != role_obj.id:
+                messages.error(request,  "Role update blocked — this volunteer is currently assigned as a Group Leader. "
+                                                 "Please reassign the group or delete it before changing the role.")
+                return redirect("volunteer_update", id=vid)
+
+        if Volunteer.objects.filter(volunteer_contact= vcon).exclude(id= vid).exists():
+            messages.error(request,"This contact is already exists !")
+            return redirect("volunteer_update", id= vid)
 
         Volunteer.objects.filter(id= vid).update(
             volunteer_name= vname,
@@ -277,10 +304,10 @@ def save_updated_volunteer(request):
         #     fail_silently=False,
         # )
         messages.success(request,f"Data has been updated of {vname}!")
-        return redirect("/set_volunteer")
+        return redirect("set_volunteer")
     else:
         messages.error(request, "Something wrong!")
-        return redirect("/save_updated_volunteer")
+        return redirect("volunteer_update")
 
 def add_new_group(request):
     if request.method == "POST":
@@ -477,8 +504,45 @@ def task_delete(request, task_id):
     task.delete()
     return redirect("see_assigned_task")
 
-def update_assign_task_to_leader():
-    pass
+
+def update_assign_task_to_leader(request):
+    if request.method == "POST":
+
+        task_id = request.POST["tid"]
+        task_title = request.POST["task_title"]
+        task_desc = request.POST["task_description"]
+        assign_group_id = request.POST["group_id"]
+
+        # get objects
+        group_obj = Groupcreate.objects.get(id=assign_group_id)
+        # task = Task_management.objects.get(id=task_id)
+
+        # unique title check
+        if Task_management.objects.filter(task_title=task_title).exclude(id=task_id).exists():
+            messages.error(request, "Task already exists!")
+            return redirect("task_update", task_id=task_id)
+
+        # update task
+
+        # 1st method
+        # task.task_title = task_title
+        # task.task_description = task_desc
+        # task.Group = group_obj
+        # task.save()
+
+        # 2nd method
+        Task_management.objects.filter(id= task_id).update(
+            task_title= task_title,
+            task_description= task_desc,
+            Group= group_obj
+        )
+
+        messages.success(request, "Task updated!")
+        return redirect("see_assigned_task")
+
+    messages.error(request, "Something went wrong!")
+    return redirect("task_update", task_id=task_id)
+
 
 def save_role(request):
     if request.method == "POST":
@@ -513,6 +577,11 @@ def save_updated_role(request):
     else:
         messages.error(request, "Something worng !!!")
         return redirect("update_Role")
+
+def delete_role(request, role_id):
+    role= Role_set.objects.filter(id= role_id)
+    role.delete()
+    return redirect("see_role")
 
 def send_notification(request):
     if request.method == "POST":
@@ -580,3 +649,6 @@ def mark_notification_read(request):
             return JsonResponse({"error": str(e)}, status=400)
 
     return JsonResponse({"error": "POST method required"}, status=405)
+
+def logout(request):
+    return redirect("/")
