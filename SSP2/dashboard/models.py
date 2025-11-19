@@ -77,6 +77,6 @@ class Notification(models.Model):
     notify_type= models.CharField(max_length=100, choices= Notification_Type, default= "Casual")
     title= models.CharField(max_length=500)
     message= models.TextField()
-    link= models.URLField(blank= True, null= True)
+    link= models.URLField(blank= True, default="N/A")
     notify_created_at= models.DateTimeField(auto_now_add= True)
     is_read= models.BooleanField(default=False)

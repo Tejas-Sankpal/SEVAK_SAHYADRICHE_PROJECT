@@ -23,6 +23,7 @@ urlpatterns = [
     path('see_role/', views.see_role, name='see_role'),
     path('update_Role/<int:role_id>', views.update_Role, name='update_Role'),
     path('notification/', views.notification, name= 'notification'),
+    path('see_notification/', views.see_notification, name= 'see_notification'),
 
 
 
@@ -41,7 +42,9 @@ urlpatterns = [
     path('update_assign_task_to_leader/', views.update_assign_task_to_leader, name='update_assign_task_to_leader'),
     path('save_role/', views.save_role, name='save_role'),
     path('save_updated_role/', views.save_updated_role, name='save_updated_role'),
+    path('delete_role/<int:role_id>/', views.delete_role, name= 'delete_role'),
     path('send_notification', views.send_notification, name= 'send_notification'),
     path('notifications/load/', views.load_notifications, name= 'load_notifications'),
     path('notifications/read/', views.mark_notification_read, name= 'mark_notification_read'),
+    path('logout/', views.logout, name= 'logout'),
 ]

@@ -1,11 +1,8 @@
 {% load static %}
 
 <style>
-/* ------------------------------
-   NAVBAR
------------------------------- */
+/* NAVBAR (unchanged) */
 .navbar {
-
     padding: 10px 20px;
     display: flex;
     justify-content: flex-end;
@@ -13,17 +10,15 @@
 }
 
 #notifBtn {
-    background: none;
-    border: none;
-    color: black;
-    font-size: 22px;
-    cursor: pointer;
-    position: relative;
+   background: none;
+   border: none;
+   color: black;
+   font-size: 22px;
+   cursor: pointer;
+   position: relative;
 }
 
-/* ------------------------------
-   BADGE
------------------------------- */
+/* Shows only unseen notification count */
 #notifCount {
     background: red;
     color: white;
@@ -35,11 +30,10 @@
     position: absolute;
     top: -6px;
     right: -10px;
+    display: none; /* Hidden by default */
 }
 
-/* ------------------------------
-   NOTIFICATION PANEL (PROFESSIONAL)
------------------------------- */
+/* NOTIFICATION PANEL (unchanged styling) */
 #notifPanel {
     width: 400px;
     max-height: 450px;
@@ -53,13 +47,11 @@
     right: 15px;
     z-index: 2000;
 
-    /* Animation */
     transform-origin: top right;
     transform: scale(0.95);
     opacity: 0;
     transition: all 0.18s ease-out;
 
-    /* Shadow */
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
@@ -68,9 +60,7 @@
     opacity: 1;
 }
 
-/* ------------------------------
-   HEADER
------------------------------- */
+/* PANEL HEADER */
 #notifHeader {
     font-weight: 600;
     padding: 14px 18px;
@@ -79,17 +69,32 @@
     color: #1d3557;
 }
 
-/* ------------------------------
-   LIST AREA
------------------------------- */
+/* LIST AREA WITH UPDATED SCROLLBAR COLORS */
 #notifList {
     max-height: 380px;
     overflow-y: auto;
 }
 
-/* ------------------------------
-   INDIVIDUAL NOTIFICATION ITEM
------------------------------- */
+/* CUSTOM SCROLLBAR — UPDATED AS YOU REQUESTED */
+#notifList::-webkit-scrollbar {
+    width: 7px;
+}
+
+#notifList::-webkit-scrollbar-track {
+    background: #e6e9ef;     /* Same track */
+    border-radius: 10px;
+}
+
+#notifList::-webkit-scrollbar-thumb {
+    background: #5a5f66;     /* New darker slider */
+    border-radius: 10px;
+}
+
+#notifList::-webkit-scrollbar-thumb:hover {
+    background: #3e4247;     /* Hover shade */
+}
+
+/* INDIVIDUAL NOTIFICATION ITEM (unchanged) */
 .notification-item {
     padding: 14px 18px;
     border-bottom: 1px solid #f2f2f2;
@@ -118,14 +123,7 @@
     color: #7f8c8d;
 }
 
-#notifList::-webkit-scrollbar-track {
-    background: #e6e9ef;     /* Light grey track */
-    border-radius: 10px;
-}
-
-/* ------------------------------
-   RESPONSIVE
------------------------------- */
+/* RESPONSIVE */
 @media (max-width: 600px) {
     #notifPanel {
         width: auto;
@@ -136,6 +134,9 @@
 }
 </style>
 
+
+
+<!-- NAVBAR HTML -->
 <nav class="navbar navbar-dark navbar-expand-lg navbar-custom fixed-top">
 
     <button class="toggle-btn" onclick="toggleSidebar()">
@@ -144,19 +145,15 @@
 
     <div class="ms-auto profile-area">
 
-        <!-- Notification Button -->
+        <!-- NOTIFICATION BELL -->
         <button id="notifBtn" aria-haspopup="true" aria-expanded="false" aria-controls="notifPanel">
             🔔
             <span id="notifCount">0</span>
         </button>
 
-        <!-- Notification Panel -->
+        <!-- PANEL -->
         <div id="notifPanel" tabindex="-1">
-
-            <!-- Header -->
             <div id="notifHeader">Notifications</div>
-
-            <!-- List -->
             <div id="notifList"></div>
         </div>
 
@@ -176,10 +173,10 @@
 </nav>
 
 
+
+
 <script>
-// ------------------------------
-// TIME FORMATTER
-// ------------------------------
+/* TIME FORMATTER -> Returns human-readable time (5m, 3h, etc.) */
 const timeAgo = (timestamp) => {
     const diff = (new Date() - new Date(timestamp)) / 1000;
 
@@ -190,15 +187,16 @@ const timeAgo = (timestamp) => {
 };
 
 
-// ------------------------------
-// RENDER NOTIFICATION
-// ------------------------------
+
+/* RENDER A SINGLE NOTIFICATION BLOCK */
 function renderNotification({ id, title, message, createdAt, read }) {
+
     const item = document.createElement("div");
     item.className = "notification-item";
     item.tabIndex = 0;
     item.dataset.id = id;
 
+    // Dim already-read notifications
     if (read) item.style.opacity = "0.5";
 
     item.innerHTML = `
@@ -207,6 +205,7 @@ function renderNotification({ id, title, message, createdAt, read }) {
         <div class="timestamp">${timeAgo(createdAt)}</div>
     `;
 
+    // Clicking or pressing Enter marks as read
     item.addEventListener("click", () => markAsRead(id));
     item.addEventListener("keypress", (e) => {
         if (e.key === "Enter") markAsRead(id);
@@ -216,9 +215,8 @@ function renderNotification({ id, title, message, createdAt, read }) {
 }
 
 
-// ------------------------------
-// LOAD NOTIFICATIONS FROM SERVER
-// ------------------------------
+
+/* LOAD NOTIFICATIONS —> ONLY UNSEEN COUNT WILL SHOW */
 async function loadNotifications() {
     try {
         const res = await fetch("/notifications/load/");
@@ -229,8 +227,14 @@ async function loadNotifications() {
 
         notifList.innerHTML = "";
 
-        notifCount.textContent = notifications.filter(n => !n.read).length;
+        // Count only unread notifications
+        const unseen = notifications.filter(n => !n.read).length;
 
+        // Show badge only if unseen > 0
+        notifCount.textContent = unseen;
+        notifCount.style.display = unseen > 0 ? "inline-block" : "none";
+
+        // Render all notifications
         notifications.forEach(renderNotification);
 
     } catch (err) {
@@ -239,9 +243,8 @@ async function loadNotifications() {
 }
 
 
-// ------------------------------
-// MARK AS READ
-// ------------------------------
+
+/* MARK A SINGLE NOTIFICATION AS READ */
 async function markAsRead(id) {
     try {
         await fetch("/notifications/read/", {
@@ -250,16 +253,17 @@ async function markAsRead(id) {
             body: JSON.stringify({ id })
         });
 
+        // Reload after marking
         loadNotifications();
+
     } catch (err) {
         console.error("Error marking as read:", err);
     }
 }
 
 
-// ------------------------------
-// PANEL OPEN/CLOSE ANIMATION
-// ------------------------------
+
+/* TOGGLE PANEL OPEN / CLOSE WITH ANIMATION */
 const notifBtn = document.getElementById("notifBtn");
 const notifPanel = document.getElementById("notifPanel");
 
@@ -272,6 +276,7 @@ notifBtn.addEventListener("click", () => {
     } else {
         notifPanel.style.display = "block";
 
+        // Delay to allow CSS animation
         setTimeout(() => {
             notifPanel.classList.add("open");
         }, 10);
@@ -281,6 +286,8 @@ notifBtn.addEventListener("click", () => {
     }
 });
 
+
+// Close when clicking outside
 document.addEventListener("click", (e) => {
     if (!notifPanel.contains(e.target) && !notifBtn.contains(e.target)) {
         notifPanel.classList.remove("open");
@@ -289,10 +296,10 @@ document.addEventListener("click", (e) => {
 });
 
 
-// ------------------------------
-// FOCUS TRAP
-// ------------------------------
+
+/* TRAP FOCUS INSIDE PANEL FOR KEYBOARD USERS */
 function trapFocus(panel) {
+
     const focusable = panel.querySelectorAll("[tabindex]");
     if (!focusable.length) return;
 
@@ -302,21 +309,26 @@ function trapFocus(panel) {
     panel.addEventListener("keydown", (e) => {
         if (e.key !== "Tab") return;
 
+        // SHIFT + TAB → loop focus to last
         if (e.shiftKey && document.activeElement === first) {
             e.preventDefault();
             last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
+        }
+        // TAB → loop focus to first
+        else if (!e.shiftKey && document.activeElement === last) {
             e.preventDefault();
             first.focus();
         }
     });
 
+    // Set focus inside panel
     first.focus();
 }
 
 
-// ------------------------------
-// INITIAL LOAD
-// ------------------------------
+
+/* INITIAL LOAD */
+
 document.addEventListener("DOMContentLoaded", loadNotifications);
+
 </script>
