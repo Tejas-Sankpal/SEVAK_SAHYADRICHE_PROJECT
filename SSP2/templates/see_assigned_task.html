@@ -2,7 +2,21 @@
 {% load static %}
 
 {% block title %}Assigned Tasks{% endblock %}
+{% block extra_css %}
 
+
+<style>
+table.table tbody tr.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.25s;
+}
+
+table.table tbody tr.clickable-row:hover {
+    background-color: red !important;
+}
+
+</style>
+{% endblock %}
 {% block content %}
 <div class="container-fluid">
   <h1>See Assigned Tasks</h1>
@@ -27,7 +41,7 @@
     </thead>
     <tbody>
       {% for task in task_details %}
-      <tr>
+      <tr class="clickable-row" data-href="{% url 'see_task_details' task.id%}">
         <td>{{ forloop.revcounter }}</td>
         <td>{{ task.task_title }}</td>
         <td>{{ task.Group.group_name }}</td>
@@ -51,4 +65,17 @@
 
 {% block extra_js %}
 <script src="{% static 'js/myjs_script.js' %}"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const rows = document.querySelectorAll(".clickable-row");
+
+    rows.forEach(row => {
+        row.addEventListener("click", function () {
+            window.location = this.dataset.href;
+        });
+    });
+});
+
+</script>
 {% endblock %}

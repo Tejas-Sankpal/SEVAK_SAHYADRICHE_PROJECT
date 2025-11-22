@@ -20,13 +20,13 @@
 
     <div class="mb-3">
       <label for="task_title">Task Title:</label>
-      <input type="text" name="task_title" class="form-control" required>
+      <input type="text" name="task_title" class="form-control" >
       <div id="taskTitleError" class="error"></div>
     </div>
 
     <div class="mb-3">
       <label for="task_description">Task Description:</label>
-      <textarea name="task_description" class="form-control" rows="3" required></textarea>
+      <textarea name="task_description" class="form-control" rows="3" ></textarea>
       <div id="taskDescError" class="error"></div>
     </div>
 
@@ -60,6 +60,9 @@
 {% endblock %}
 
 {% block extra_js %}
+
+<script src="{% static 'js/myjs_script.js' %}"></script>
+
 <script>
 //Ajax for leader & group dropdown sync
 document.addEventListener("DOMContentLoaded", function() {
@@ -90,7 +93,6 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-<script src="{% static 'js/myjs_script.js' %}"></script>
 
 {% endblock %}
 

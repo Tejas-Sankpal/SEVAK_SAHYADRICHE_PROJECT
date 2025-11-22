@@ -2,235 +2,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Professional Login Page</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Organisation Login | इतिहासबोधेन कर्तव्यमार्ग</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<style>
-  * { box-sizing: border-box; }
 
-  body {
-    margin: 0;
-    font-family: "Poppins", sans-serif;
-    background: #eef1f6;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .main-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    padding: 20px;
-    max-width: 1100px;
-    width: 100%;
-  }
-
-  .image-box {
-    width: 420px;
-    height: 420px;
-    border-radius: 15px;
-    overflow: hidden;
-    background: #fff;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.12);
-  }
-  .image-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .divider-line {
-    width: 2px;
-    height: 400px;
-    background: #cfd6e2;
-  }
-
-  .login-section {
-    width: 420px;
-    text-align: center;
-  }
-
-  .top-icon {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 25px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 4px solid #fff;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
-  }
-  .top-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .login-box {
-    background: #fff;
-    padding: 30px 25px;
-    border-radius: 15px;
-    box-shadow: 0px 5px 25px rgba(0,0,0,0.12);
-  }
-
-  .login-box h2 {
-    font-size: 26px;
-    margin-bottom: 5px;
-    color: #2c3e50;
-  }
-
-  .login-box p {
-    font-size: 14px;
-    color: #68727f;
-    margin-bottom: 20px;
-  }
-
-  .form-group { margin-bottom: 18px; text-align: left; }
-
-  input.form-control {
-    width: 100%;
-    height: 48px;
-    border: 2px solid #dbe2eb;
-    border-radius: 10px;
-    padding: 0 14px;
-    font-size: 14px;
-    background: #fafbfc;
-    outline: none;
-  }
-
-  input.form-control:focus {
-    border-color: #4a90e2;
-    background: #fff;
-  }
-
-  .password-wrapper { position: relative; }
-
-  .password-toggle {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: none;
-    background: none;
-    cursor: pointer;
-    color: #718096;
-  }
-
-  .login-btn {
-    width: 100%;
-    height: 48px;
-    margin-top: 10px;
-    background: #4a90e2;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    cursor: pointer;
-  }
-  .login-btn:hover {
-    background: #357abd;
-  }
-
-  /* Responsive */
-  @media(max-width: 968px) {
-    .main-wrapper { flex-direction: column; gap: 0; }
-    .image-box { display: none; }
-    .divider-line { display: none; }
-    .login-section { width: 90%; }
-  }
-
-  @media(max-width: 480px) {
-    input.form-control, .login-btn { height: 44px; font-size: 13px; }
-    .top-icon { width: 100px; height: 100px; }
-    .login-box { padding: 25px 20px; }
-    .login-box h2 { font-size: 22px; }
-  }
-</style>
+  <!-- Custom CSS -->
+  <link href="{% static 'css/mystyle.css' %}" rel="stylesheet" type="text/css">
 
 </head>
+<body class="page page--auth">
+  <div class="page-scale-root">
+    <div class="page-scale-wrapper">
+      <main class="auth" aria-labelledby="auth-login-title">
+        <section class="auth-card" role="region" aria-label="Organisation login">
 
-<body>
+          <!-- Left visual panel: logo, motto, large slideshow -->
+          <aside class="auth-card__left" aria-label="Heritage visual">
+            <div class="auth-card__left-inner">
+              <header class="auth-hero-header">
+                <!-- kept small header area; slideshow will fill the rest -->
+              </header>
 
-<div class="main-wrapper">
+              <div class="auth-motto" aria-label="Organisation guiding phrase">
+                <p class="auth-motto__text">“इतिहासबोधेन कर्तव्यमार्ग”</p>
+              </div>
 
-  <!-- LEFT IMAGE -->
-  <div class="image-box">
-    <img src="{% static 'images/bg.jpg' %}" alt="Background">
+              <section
+                class="slideshow"
+                aria-roledescription="carousel"
+                aria-label="Heritage fort visuals">
+                <div class="slideshow__viewport" tabindex="-1">
+                  <!-- Slide 1 -->
+                  <figure
+                    class="slideshow__slide slideshow__slide--active"
+                    data-slide-index="0"
+                    aria-roledescription="slide"
+                    aria-label="1 of 3">
+                    <img
+                      src="{% static 'images/slide1.jpg' %}"
+                      alt="Historic fort walls under dramatic sky"
+                      class="slideshow__image"
+                    />
+                  </figure>
+
+                  <!-- Slide 2 -->
+                  <figure
+                    class="slideshow__slide"
+                    data-slide-index="1"
+                    aria-roledescription="slide"
+                    aria-label="2 of 3">
+                    <img
+                      src="{% static 'images/slide2.jpg' %}"
+                      alt="Saffron flag above a Sahyadri fort"
+                      class="slideshow__image"
+                    />
+                  </figure>
+
+                  <!-- Slide 3 (duplicate for smooth loop) -->
+                  <figure
+                    class="slideshow__slide"
+                    data-slide-index="2"
+                    aria-roledescription="slide"
+                    aria-label="3 of 3">
+                    <img
+                      src="{% static 'images/slide3.jpg' %}"
+                      alt="Fort sunset"
+                      class="slideshow__image"
+                    />
+                  </figure>
+                </div>
+
+                <!-- Controls / indicators (no captions) -->
+                <div class="slideshow__controls">
+                  <button
+                    class="slideshow__control slideshow__control--prev"
+                    type="button"
+                    aria-label="Previous slide">
+                    ‹
+                  </button>
+                  <div class="slideshow__indicators" role="tablist" aria-label="Choose slide">
+                    <button
+                      type="button"
+                      class="slideshow__indicator slideshow__indicator--active"
+                      data-target-slide="0"
+                      role="tab"
+                      aria-selected="true"
+                      aria-label="Show slide 1">
+                    </button>
+                    <button
+                      type="button"
+                      class="slideshow__indicator"
+                      data-target-slide="1"
+                      role="tab"
+                      aria-selected="false"
+                      aria-label="Show slide 2">
+                    </button>
+                    <button
+                      type="button"
+                      class="slideshow__indicator"
+                      data-target-slide="2"
+                      role="tab"
+                      aria-selected="false"
+                      aria-label="Show slide 3">
+                    </button>
+                  </div>
+                  <button
+                    class="slideshow__control slideshow__control--next"
+                    type="button"
+                    aria-label="Next slide">
+                    ›
+                  </button>
+                </div>
+
+                <p class="slideshow__announcement" aria-live="polite"></p>
+
+                <noscript>
+                  <p class="slideshow__noscript">
+                    JavaScript is disabled; showing the first image only.
+                  </p>
+                </noscript>
+              </section>
+            </div>
+          </aside>
+
+          <!-- Right panel: LOGIN ONLY -->
+          <section class="auth-card__right" aria-label="Login">
+            <!-- Move logo above the form for stronger visibility -->
+            <div class="auth-card__right-top">
+              <div class="brand-badge" aria-hidden="true">
+                <img
+                  src="{% static 'images/सेवक सह्याद्रीचे_20250102_205646_0000.png' %}"
+                  alt="Organisation Emblem"
+                  class="brand-badge__image"
+                />
+              </div>
+            </div>
+
+            <header class="auth-form-header">
+              <h1 id="auth-login-title" class="auth-form-title">
+                Member Login
+              </h1>
+            </header>
+
+            <!-- Login form -->
+            <!-- For Django: change action to  and add {% csrf_token %} -->
+            <form
+              class="form form--login-only"
+              method="post"
+              action=""
+              novalidate
+              aria-describedby="login-description">
+
+              <!-- Inside Django template, replace the next line with {% csrf_token %} -->
+              <!-- {% csrf_token %} -->
+              {% csrf_token %}
+
+              <p id="login-description" class="form__description">
+                Enter the username or email and password provided by your organisation.
+              </p>
+
+              <div class="form__field">
+                <label class="form__label" for="id_identifier">Username / Email</label>
+                <input
+                  id="id_identifier"
+                  name="identifier"
+                  type="text"
+                  required
+                  autocomplete="username"
+                  class="form__input"
+                  aria-describedby="identifier-error">
+                <p
+                  class="form__error"
+                  id="identifier-error"
+                  role="status"
+                  aria-live="polite">
+                </p>
+              </div>
+
+              <div class="form__field form__field--password">
+                <label class="form__label" for="id_password_login">Password</label>
+                <div class="form__password-wrapper">
+                  <input
+                    id="id_password_login"
+                    name="password"
+                    type="password"
+                    required
+                    minlength="8"
+                    autocomplete="current-password"
+                    class="form__input form__input--password"
+                    aria-describedby="password-login-error">
+                  <button
+                    type="button"
+                    class="form__password-toggle"
+                    aria-label="Show password"
+                    aria-pressed="false">
+                    👁
+                  </button>
+                </div>
+                <p
+                  class="form__error"
+                  id="password-login-error"
+                  role="status"
+                  aria-live="polite">
+                </p>
+              </div>
+
+              <div class="form__actions form__actions--login-only">
+                <button type="submit" class="button button--primary">
+                  Log in
+                </button>
+              </div>
+            </form>
+          </section>
+        </section>
+      </main>
+    </div>
   </div>
 
-  <!-- VERTICAL LINE -->
-  <div class="divider-line"></div>
 
-  <!-- RIGHT LOGIN BOX -->
-  <div class="login-section">
+  <script src="{% static 'js/myjs_script.js' %}"></script>
 
-    <div class="top-icon">
-      <img src="{% static 'images/logo.png' %}" alt="Logo">
-    </div>
-
-    <div class="login-box">
-      <h2>Login</h2>
-      <p>Sevak Sahyadriche Work Portal</p>
-
-      <form method="post">
-        {% csrf_token %}
-
-        <div class="form-group">
-          <input type="email" name="email" class="form-control" placeholder="Email" required autocomplete="email">
-        </div>
-
-        <div class="form-group">
-          <div class="password-wrapper">
-            <input type="password" name="password" id="password" class="form-control password-input" placeholder="Password" required autocomplete="current-password">
-            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <button type="submit" class="login-btn">Login</button>
-
-      </form>
-    </div>
-
-  </div>
-
-</div>
-
-<script>
-  const passwordInput = document.getElementById('password');
-  const passwordToggle = document.getElementById('passwordToggle');
-
-  passwordToggle.addEventListener('click', function() {
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
-
-    // Toggle icon
-    if (type === 'text') {
-      passwordToggle.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-          <line x1="1" y1="1" x2="23" y2="23"></line>
-        </svg>
-      `;
-    } else {
-      passwordToggle.innerHTML = `
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-          <circle cx="12" cy="12" r="3"></circle>
-        </svg>
-      `;
-    }
-  });
-</script>
 </body>
 </html>
