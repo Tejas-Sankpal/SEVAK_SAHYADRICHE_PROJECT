@@ -13,7 +13,7 @@
         {% endfor %}
       {% endif %}
 
-      <form action="{% url 'send_notification' %}" method="post">
+      <form action="{% url 'send_notification' %}" method="post" id="AdminNotification">
 
         {% csrf_token%}
 
@@ -24,31 +24,36 @@
             <option value="Casual">Casual Notification</option>
             <option value="Meeting">Meeting Link</option>
           </select>
-          <small id="NotifyType" class="error"></small>
+          <div id="NotifyTypeError" class="error"></div>
         </div>
 
         <div class="mb-3">
           <label>Notification Title:</label>
           <input type="text" name="notifytitle" class="form-control">
-          <small id="NotifyTitle" class="error"></small>
+          <div id="NotifyTitleError" class="error"></div>
         </div>
 
         <div class="mb-3">
           <label>Description:</label>
           <textarea name="notifydesc" class="form-control" rows="5"></textarea>
-          <small id="NotifyDesc" class="error"></small>
+          <div id="NotifyDescError" class="error"></div>
         </div>
 
         <div class="mb-3" id="link_field">
           <label>Meeting Link:</label>
           <input type="text" name="meetinglink" class="form-control">
-          <small id="MeetingLink" class="error"></small>
+          <div id="MeetingLinkError" class="error"></div>
         </div>
 
         <button type="submit" class="btn btn-success">Send</button>
 
       </form>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="{% static 'js/myjs_script.js' %}"></script>
 
 <script>
 // hide/show link field based on type
@@ -69,8 +74,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-{% endblock %}
-
-{% block extra_js %}
-<script src="{% static 'js/myjs_script.js' %}"></script>
 {% endblock %}

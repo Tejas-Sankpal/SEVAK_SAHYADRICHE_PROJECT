@@ -21,9 +21,11 @@ urlpatterns = [
     path('task_update/<int:task_id>/', views.task_update, name='task_update'),
     path('set_role/', views.set_role, name= 'set_role'),
     path('see_role/', views.see_role, name='see_role'),
-    path('update_Role/<int:role_id>', views.update_Role, name='update_Role'),
+    path('update_Role/<int:role_id>/', views.update_Role, name='update_Role'),
     path('notification/', views.notification, name= 'notification'),
     path('see_notification/', views.see_notification, name= 'see_notification'),
+    path('update_profile/', views.update_profile, name='update_profile'),
+    path('see_task_details/<int:task_id>/', views.see_task_details, name= 'see_task_details'),
 
 
 
@@ -46,5 +48,6 @@ urlpatterns = [
     path('send_notification', views.send_notification, name= 'send_notification'),
     path('notifications/load/', views.load_notifications, name= 'load_notifications'),
     path('notifications/read/', views.mark_notification_read, name= 'mark_notification_read'),
-    path('logout/', views.logout, name= 'logout'),
+    path('update_task_status/', views.update_task_status, name= 'update_task_status'),
+    path('logout/', views.logout, name='logout'),
 ]

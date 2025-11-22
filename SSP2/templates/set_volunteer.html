@@ -19,21 +19,21 @@
   <form id="volunteerForm" action="{% url 'volunteer_save' %}" method="post"  onsubmit="return validateForm()" novalidate>
     {% csrf_token %}
     <div class="mb-3">
-      <label>Volunteer Name:</label>
+      <label>Member Name:</label>
       <input type="text" name="vname" class="form-control">
-      <small id="volNameError" class="error"></small>
+      <div id="volNameError" class="error"></div>
     </div>
 
     <div class="mb-3">
       <label>Email:</label>
       <input type="email" name="vemail" class="form-control">
-      <small id="volEmailError" class="error"></small>
+      <div id="volEmailError" class="error"></div>
     </div>
 
     <div class="mb-3">
       <label>Contact:</label>
       <input type="text" name="vcon" class="form-control">
-      <small id="volContactError" class="error"></small>
+      <div id="volContactError" class="error"></div>
     </div>
 
     <div class="mb-3 position-relative">
@@ -42,7 +42,7 @@
         <input type="text" id="vpass" name="vpass" class="form-control" readonly>
         <button type="button" class="btn btn-outline-success" onclick="copyPassword()">Copy</button>
       </div>
-      <small id="volPasswordError" class="error"></small>
+      <div id="volPasswordError" class="error"></div>
     </div>
 
 
@@ -54,7 +54,7 @@
           <option value="{{ role.id }}">{{ role.role_name }}</option>
         {% endfor %}
       </select>
-      <small id="volRoleError" class="error"></small>
+      <div id="volRoleError" class="error"></div>
     </div>
 
     <button type="submit" class="btn btn-primary">Add Volunteer</button>

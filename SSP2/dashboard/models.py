@@ -20,6 +20,9 @@ class Volunteer(models.Model):
         on_delete= models.CASCADE,
         related_name= 'role_of_volunteer'
     )
+    profile_photo = models.ImageField(upload_to='uploads/', null=True, blank=True)
+    volunteer_birthday = models.DateField(null=True, blank=True)
+    volunteer_address = models.TextField(null=True, blank=True)
     volunteer_regi_datetime= models.DateField(auto_now_add= True)  #set at create time
     volunteer_update_regi_datetime= models.DateTimeField(auto_now= True) #set at every time update
 
@@ -80,3 +83,6 @@ class Notification(models.Model):
     link= models.URLField(blank= True, default="N/A")
     notify_created_at= models.DateTimeField(auto_now_add= True)
     is_read= models.BooleanField(default=False)
+
+#7th model for create subtask
+

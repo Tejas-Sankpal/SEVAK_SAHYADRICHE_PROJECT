@@ -53,18 +53,24 @@ def group_dashboard(request):
     return render(request,"Group_dashboard.html",{'group': group_data})
 
 def create_group(request):
-    volunteer_data= Volunteer.objects.filter(volunteer_role__role_name="Group Leader")
-    group_data= Groupcreate.objects.all().order_by('-id')
-    return render(request,"create_group.html", {'volunteer':volunteer_data, 'group': group_data})
+    volunteer_data = Volunteer.objects.filter(
+        volunteer_role__role_name__icontains="leader"
+    )
+    group_data = Groupcreate.objects.all().order_by('-id')
+    return render(request, "create_group.html", {'volunteer': volunteer_data, 'group': group_data})
 
 def group_see(request):
     group_data = Groupcreate.objects.all().order_by('-id')
-    group_leaders = Volunteer.objects.filter(volunteer_role__role_name="Group Leader")
+    group_leaders = Volunteer.objects.filter(
+        volunteer_role__role_name__icontains="Group Leader"
+    )
     return render(request,"group_see.html",{'group': group_data,"group_leaders": group_leaders} )
 
 def add_members_view(request, group_id):
     group = get_object_or_404(Groupcreate, pk=group_id)   #"get_object_or_404" means if data not come then showing error like 404
-    all_volunteers = Volunteer.objects.filter(volunteer_role__role_name='Member')
+    all_volunteers = Volunteer.objects.filter(
+        volunteer_role__role_name__icontains='Member'
+    )
 
     volunteers_data = []
     for volunteer in all_volunteers:  #fetch all volunteers
@@ -93,7 +99,9 @@ def add_members_view(request, group_id):
 
 def view_members(request):
 
-    all_volunteers = Volunteer.objects.filter(volunteer_role__role_name='Member')
+    all_volunteers = Volunteer.objects.filter(
+        volunteer_role__role_name__icontains='Member'
+    )
 
     volunteers_data = []
     for volunteer in all_volunteers:         #fetch all volunteers
@@ -123,9 +131,13 @@ def task_dashboard(request):
     return render(request,"task_dashboard.html")
 
 def create_task(request):
-    leader_name = Volunteer.objects.filter(volunteer_role__role_name="Group Leader")
+    leader_name = Volunteer.objects.filter(
+        volunteer_role__role_name__icontains="Group Leader"
+    )
     group_name = Groupcreate.objects.all()
-    admin_name = Volunteer.objects.filter(volunteer_role__role_name="Admin")
+    admin_name = Volunteer.objects.filter(
+        volunteer_role__role_name__icontains="Admin"
+    )
 
     context = {
         "leader_name": leader_name,
@@ -161,7 +173,7 @@ def see_assigned_task(request):
     return render(request,"see_assigned_task.html", {"task_details":task_details})
 
 def task_update(request, task_id):
-    leader_name = Volunteer.objects.filter(volunteer_role__role_name="Group Leader")
+    leader_name = Volunteer.objects.filter(volunteer_role__role_name__icontains="Group Leader")
     group_name = Groupcreate.objects.all()
     data = Task_management.objects.filter(id= task_id)
 
@@ -189,6 +201,17 @@ def notification(request):
 def see_notification(request):
     notification_data= Notification.objects.all().order_by('-id')
     return render(request,"see_notification.html",{"notify_data":notification_data})
+
+def update_profile(request):
+    return render(request,"update_profile.html")
+
+def see_task_details(request,task_id):
+    data = Task_management.objects.filter(id=task_id)
+    status_choices = ["Pending", "In-Progress", "Completed", "Rejected"]
+    return render(request,"see_task_details.html", {"data":data, "status_choices":status_choices})
+
+
+
 
 
 
@@ -652,3 +675,26 @@ def mark_notification_read(request):
 
 def logout(request):
     return redirect("/")
+
+def update_task_status(request):
+    if request.method == "POST":
+        tid = request.POST.get("tid")
+        status = request.POST.get("task_status")
+        reject_reason = request.POST.get("task_reject_reason")
+
+        if status == "Rejected":
+            Task_management.objects.filter(id=tid).update(
+                task_status=status,
+                task_reject_reason=reject_reason
+            )
+        else:
+            Task_management.objects.filter(id=tid).update(
+                task_status=status,
+                task_reject_reason=None  # Clear reason
+            )
+
+        messages.success(request, "Task Status Updated Successfully!")
+        return redirect("see_task_details", task_id=tid)
+
+    messages.error(request, "Something went wrong, Task not updated!")
+    return redirect("assigned_tasks")  # Use a safe fallback page

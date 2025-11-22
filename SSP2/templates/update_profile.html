@@ -1,0 +1,244 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block title %}Update Profile{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/mystyle.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block content %}
+
+<!-- include fontawesome for the icons (if your base template doesn't already) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<div class="profile-wrapper">
+
+    <!-- LEFT SIDE - Profile Photo -->
+    <div class="profile-photo">
+        <div class="photo-upload-wrapper">
+            {% if volunteer.profile_photo %}
+                <img src="{{ volunteer.profile_photo.url }}" id="profileImagePreview" alt="Profile Photo">
+            {% else %}
+                <img src="{% static 'images/default.png' %}" id="profileImagePreview" alt="Profile Photo">
+            {% endif %}
+            <input type="file" id="photoInput" name="profile_photo" accept="image/*" class="photo-upload-input">
+        </div>
+
+        <button type="button" class="upload-btn" onclick="document.getElementById('photoInput').click()">
+            <i class="fas fa-upload"></i> Change Photo
+        </button>
+    </div>
+
+    <!-- RIGHT SIDE - Profile Form -->
+    <form class="profile-form" id="volunteerForm" method="POST" enctype="multipart/form-data" action="" onsubmit="return validateForm(event)" novalidate>
+        {% csrf_token %}
+
+        <div class="form-header">
+            <h2><i class="fas fa-user-edit"></i> Update Profile</h2>
+            <p>Keep your information updated</p>
+        </div>
+
+        <div id="successMessage" class="success-message">
+            <i class="fas fa-check-circle"></i> Profile updated successfully!
+        </div>
+
+        <div class="form-group">
+            <label for="volunteer_name">Member Name</label>
+            <input type="text" name="volname" class="input-box"
+                   value="{{ volunteer.volunteer_name|default_if_none:'' }}"  maxlength="100">
+        <div id="volNameError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="volunteer_email">Email Address</label>
+            <input type="email"  name="volemail" class="input-box"
+                   value="{{ volunteer.volunteer_email|default_if_none:'' }}"  maxlength="100">
+        <div id="volEmailError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="volunteer_contact">Contact Number</label>
+            <input type="tel" name="volcon"
+                   class="input-box" maxlength="10"
+                   value="{{ volunteer.volunteer_contact|default_if_none:'' }}">
+            <div id="volContactError" class="error"></div>
+        </div>
+
+        <!-- Role removed as requested -->
+
+        <div class="form-group">
+            <label for="volunteer_birthday">Birthday</label>
+            <input type="date" id="volunteer_birthday" name="volbirthday"
+                   class="input-box"
+                   value="{{ volunteer.volunteer_birthday|date:'Y-m-d'|default_if_none:'' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="volunteer_address">Address</label>
+            <textarea id="volunteer_address" name="voladdress"
+                      class="input-box" rows="3">{{ volunteer.volunteer_address|default_if_none:'' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="volunteer_pass">New Password</label>
+            <div class="input-with-icon">
+                <input type="password" name=""
+                       class="input-box" placeholder="Leave blank to keep current" maxlength="100" autocomplete="new-password">
+                <i class="fas fa-eye password-toggle" id="passwordToggle" title="Show/Hide"></i>
+            </div>
+            <div class="inline-note">Minimum 8 characters, include uppercase, lowercase and a number.</div>
+            <div id="voPasswordError" class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="volunteer_pass_confirm">Confirm Password</label>
+            <div class="input-with-icon">
+                <input type="password" id="volunteer_pass_confirm" name="volunteer_pass_confirm"
+                       class="input-box" placeholder="Confirm new password" maxlength="100" autocomplete="new-password">
+                <i class="fas fa-eye password-toggle" id="passwordToggleConfirm" title="Show/Hide"></i>
+            </div>
+            <div id="confirmError" class="error-text" style="display:none;"></div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">
+            <i class="fas fa-save"></i> Update Profile
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="{% static 'js/myjs_script.js' %}"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("volunteerForm");
+    if (!form) return;
+
+    // === Name Validation ===
+    function validateName() {
+        const name = form.volname.value.trim();
+        const error = document.getElementById("volNameError");
+
+        if (name === "") {
+            error.textContent = "Name is required";
+            return false;
+        }
+        if (!/^[A-Za-z ]+$/.test(name)) {
+            error.textContent = "Only letters allowed";
+            return false;
+        }
+        error.textContent = "";
+        return true;
+    }
+
+    // === Email Validation ===
+    function validateEmail() {
+        const email = form.volemail.value.trim();
+        const error = document.getElementById("volEmailError");
+        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (email === "") {
+            error.textContent = "Email is required";
+            return false;
+        }
+        if (!pattern.test(email)) {
+            error.textContent = "Enter valid email";
+            return false;
+        }
+        error.textContent = "";
+        return true;
+    }
+
+    // === Contact Validation ===
+    function validateContact() {
+        const contact = form.volcon.value.trim();
+        const error = document.getElementById("volContactError");
+
+        if (contact === "") {
+            error.textContent = "Contact number is required";
+            return false;
+        }
+        if (!/^[0-9]{10}$/.test(contact)) {
+            error.textContent = "Contact must be 10 digits";
+            return false;
+        }
+        error.textContent = "";
+        return true;
+    }
+
+    // === Password Validation ===
+    function validatePassword() {
+        const passwordInput = document.querySelector("input[type='password']:not(#volunteer_pass_confirm)");
+        const password = passwordInput.value.trim();
+        const error = document.getElementById("voPasswordError");
+        const pattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$/;
+
+        if (password === "") {
+            error.textContent = "Password is required"; // No password = no allowed
+            return false;
+        }
+        if (!pattern.test(password)) {
+            error.textContent = "At least 8 characters + uppercase + lowercase + number";
+            return false;
+        }
+        error.textContent = "";
+        return true;
+    }
+
+    // === Confirm Password Validation (Only if password entered) ===
+    function validateConfirmPassword() {
+        const passwordInput = document.querySelector("input[type='password']:not(#volunteer_pass_confirm)");
+        const password = passwordInput.value.trim();
+        const confirm = document.getElementById("volunteer_pass_confirm").value.trim();
+        const error = document.getElementById("confirmError");
+
+        if (password !== "" && confirm === "") {
+            error.style.display = "block";
+            error.textContent = "Please confirm password";
+            return false;
+        }
+        if (password !== "" && password !== confirm) {
+            error.style.display = "block";
+            error.textContent = "Passwords do not match";
+            return false;
+        }
+        error.style.display = "none";
+        error.textContent = "";
+        return true;
+    }
+
+    // === Real-Time Validation Events ===
+    form.volname.addEventListener("input", validateName);
+    form.volemail.addEventListener("input", validateEmail);
+    form.volcon.addEventListener("input", validateContact);
+    form.querySelector("input[type='password']:not(#volunteer_pass_confirm)")
+        .addEventListener("input", function () {
+            validatePassword();
+            validateConfirmPassword();
+        });
+    document.getElementById("volunteer_pass_confirm")
+        .addEventListener("input", validateConfirmPassword);
+
+    // === Submit Validation ===
+    form.addEventListener("submit", function (e) {
+        const ok =
+            validateName() &&
+            validateEmail() &&
+            validateContact() &&
+            validatePassword() &&
+            validateConfirmPassword();
+
+        if (!ok) {
+            e.preventDefault();
+            console.log("Form blocked due to validation errors");
+        }
+    });
+});
+
+</script>
+{% endblock %}
