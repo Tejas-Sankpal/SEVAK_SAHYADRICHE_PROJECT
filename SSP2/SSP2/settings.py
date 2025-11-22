@@ -79,6 +79,7 @@ WSGI_APPLICATION = 'SSP2.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+<<<<<<< HEAD
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
@@ -96,6 +97,17 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
 }
+=======
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'SSP2',
+        'USER': 'root',
+        'PASSWORD': 'Developer@tejas',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
+>>>>>>> 415558886a8eadbed5a587c4e3f0a6b02cdd7e7c
 }
 
 

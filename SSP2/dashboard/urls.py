@@ -50,6 +50,9 @@ urlpatterns = [
     path('notifications/read/', views.mark_notification_read, name= 'mark_notification_read'),
     path('update_task_status/', views.update_task_status, name= 'update_task_status'),
     path('logout/', views.logout, name='logout'),
+<<<<<<< HEAD
     path('see_assigned_task/',views.see_assigned_task,name='see_assigned_task'),
     path('see_notification/', views.see_notification, name= 'see_notification'),
+=======
+>>>>>>> 415558886a8eadbed5a587c4e3f0a6b02cdd7e7c
 ]

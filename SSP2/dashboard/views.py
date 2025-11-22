@@ -698,6 +698,7 @@ def update_task_status(request):
 
     messages.error(request, "Something went wrong, Task not updated!")
     return redirect("assigned_tasks")  # Use a safe fallback page
+<<<<<<< HEAD
 
 
 from .models import Task_management
@@ -750,3 +751,5 @@ def see_notifications(request):
         'notify_data': notifications
     }
     return render(request, "see_notifications.html", context)
+=======
+>>>>>>> 415558886a8eadbed5a587c4e3f0a6b02cdd7e7c
