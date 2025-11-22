@@ -1,0 +1,113 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+
+<h1>Details of Task</h1>
+
+<br>
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+<br>
+
+<form action="{% url 'update_task_status' %}" method="post" id="AdminTaskAssign">
+  {% csrf_token %}
+
+  {% for data in data %}
+  <input type="hidden" name="tid" value="{{ data.id }}">
+
+  <div class="mb-3">
+    <label for="task_title">Task Title:</label>
+    <input type="text" name="task_title" class="form-control" value="{{ data.task_title }}" readonly>
+  </div>
+
+  <div class="mb-3">
+    <label for="task_description">Task Description:</label>
+    <textarea name="task_description" class="form-control" rows="3" readonly>{{ data.task_description }}</textarea>
+  </div>
+
+  <div class="mb-3">
+    <label for="task_status">Change Status:</label>
+    <select id="task_status" name="task_status" class="form-control">
+      {% for status in status_choices %}
+        <option value="{{ status }}"
+          {% if status == data.task_status %} selected {% endif %}>
+          {{ status }}
+        </option>
+      {% endfor %}
+    </select>
+
+  </div>
+
+  <div class="mb-3" id="rejectReasonContainer" style="display: none;">
+    <label for="task_reject_reason">Rejection Reason:</label>
+    <textarea name="task_reject_reason" id="task_reject_reason"
+              class="form-control" rows="3">{{ data.task_reject_reason }}</textarea>
+    <div id="taskRejectError" class="error"></div>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Update Task</button>
+  {% endfor %}
+</form>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("AdminTaskAssign");
+    const statusSelect = document.getElementById("task_status");
+    const rejectBox = document.getElementById("rejectReasonContainer");
+    const rejectInput = document.getElementById("task_reject_reason");
+    const errorEl = document.getElementById("taskRejectError");
+
+    function toggleRejectBox() {
+        if (statusSelect.value === "Rejected") {
+            rejectBox.style.display = "block";
+        } else {
+            rejectBox.style.display = "none";
+            rejectInput.value = "";
+            errorEl.textContent = "";
+        }
+    }
+
+    function validateRejectReason() {
+        if (statusSelect.value === "Rejected") {
+            if (rejectInput.value.trim() === "") {
+                errorEl.textContent = "Reject Reason is required";
+                return false;
+            }
+        }
+        errorEl.textContent = "";
+        return true;
+    }
+
+    // Toggle when status changes
+    statusSelect.addEventListener("change", function() {
+        toggleRejectBox();
+        validateRejectReason();
+    });
+
+    // Validate while typing
+    rejectInput.addEventListener("input", validateRejectReason);
+
+    // Validate on form submit
+    form.addEventListener("submit", function(e){
+        if (!validateRejectReason()) {
+            e.preventDefault();
+        }
+    });
+
+    // If page loads with rejected status → show box
+    toggleRejectBox();
+});
+
+
+</script>
+{% endblock %}

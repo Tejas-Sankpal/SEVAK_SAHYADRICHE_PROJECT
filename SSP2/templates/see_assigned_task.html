@@ -1,0 +1,75 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}Assigned Tasks{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+    <h2 class="mb-3">Assigned Task List</h2>
+
+    <!-- Dropdown Filter Form -->
+    <form method="GET" class="row g-3 mb-4">
+
+        <!-- Filter Type Dropdown -->
+        <div class="col-md-3">
+            <select name="filter_type" class="form-control">
+                <option value="title" {% if request.GET.filter_type == 'title' %}selected{% endif %}>Task Title</option>
+                <option value="group" {% if request.GET.filter_type == 'group' %}selected{% endif %}>Group Name</option>
+                <option value="status" {% if request.GET.filter_type == 'status' %}selected{% endif %}>Status</option>
+                <option value="created_at" {% if request.GET.filter_type == 'created_at' %}selected{% endif %}>Created Date</option>
+            </select>
+        </div>
+
+        <!-- Filter Value Input -->
+        <div class="col-md-4">
+            <input type="text" name="filter_value" class="form-control"
+                   placeholder="Enter search value"
+                   value="{{ request.GET.filter_value }}">
+        </div>
+
+        <!-- Search Button -->
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Search</button>
+        </div>
+
+    </form>
+    <!-- End Dropdown Filter -->
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Task Title</th>
+                <th>Group Name</th>
+                <th>Created At</th>
+                <th>Status</th>
+                <th>Rejection Reason</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in task_details %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ task.task_title }}</td>
+                <td>{{ task.Group.group_name }}</td>
+                <td>{{ task.task_created_at|date:"Y-m-d" }}</td>
+                <td>{{ task.task_status }}</td>
+                <td>{% if task.task_status == "Rejected" %}{{ task.task_reject_reason }}{% else %}-{% endif %}</td>
+                <td>
+                    <a href="{% url 'task_update' task.id %}" class="btn btn-sm btn-secondary">Edit</a>
+                    <a href="{% url 'task_delete' task.id %}" class="btn btn-sm btn-danger"
+                       onclick="return confirm('Are you sure?')">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center text-danger fw-bold">No tasks found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

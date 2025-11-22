@@ -1,0 +1,111 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}Add Role{% endblock %}
+
+{% block extra_css %}
+ <style>
+     .error {
+  color: red;
+  font-size: 14px;
+}
+form div {
+  margin-bottom: 12px;
+}
+
+/* Base style for inputs */
+input, select {
+  padding-right: 30px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+}
+
+/* Valid input → green border + ✔ */
+input.valid, select.valid {
+  border-color: green;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><text x='0' y='15' font-size='18' fill='green'>✔</text></svg>") no-repeat right 8px center;
+  background-size: 20px 20px;
+}
+
+/* Invalid input → red border + ✖ */
+input.invalid, select.invalid {
+  border-color: red;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><text x='0' y='15' font-size='18' fill='red'>✖</text></svg>") no-repeat right 8px center;
+  background-size: 20px 20px;
+}
+ </style>
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+  <h2 class="mb-4">Add Role</h2>
+
+   {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+    <form id="SetRoleForm" action="/save_role/" method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label>Role Name:</label>
+            <input type="text" name="rolenm" class="form-control">
+            <small id="roleNameError" class="error"></small>
+        </div>
+
+        <button type="submit" class="btn btn-success">Set role</button>
+
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/myjs_script.js' %}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("SetRoleForm");
+
+    // --- Name Validation ---
+    function validateName() {
+      const name = form.rolenm.value.trim();
+      const errorEl = document.getElementById("roleNameError");
+
+      if (name === "") {
+        errorEl.textContent = "Name is required";
+        form.rolenm.classList.add("invalid");
+        form.rolenm.classList.remove("valid");
+        return false;
+      } else if (name.length < 2 || name.length > 50) {
+        errorEl.textContent = "Name must be between 2 and 50 characters";
+        form.rolenm.classList.add("invalid");
+        form.rolenm.classList.remove("valid");
+        return false;
+      } else {
+        errorEl.textContent = "";
+        form.rolenm.classList.add("valid");
+        form.rolenm.classList.remove("invalid");
+        return true;
+      }
+    }
+
+    form.rolenm.addEventListener("input", validateName);
+
+     form.addEventListener("submit", function (e) {
+      let isValid = true;
+
+      if (!validateName()) isValid = false;
+
+      if (!isValid) e.preventDefault();
+    });
+
+});
+</script>
+
+{% endblock %}

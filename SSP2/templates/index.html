@@ -1,0 +1,227 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Organisation Login | इतिहासबोधेन कर्तव्यमार्ग</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <!-- Custom CSS -->
+  <link href="{% static 'css/mystyle.css' %}" rel="stylesheet" type="text/css">
+
+</head>
+<body class="page page--auth">
+  <div class="page-scale-root">
+    <div class="page-scale-wrapper">
+      <main class="auth" aria-labelledby="auth-login-title">
+        <section class="auth-card" role="region" aria-label="Organisation login">
+
+          <!-- Left visual panel: logo, motto, large slideshow -->
+          <aside class="auth-card__left" aria-label="Heritage visual">
+            <div class="auth-card__left-inner">
+              <header class="auth-hero-header">
+                <!-- kept small header area; slideshow will fill the rest -->
+              </header>
+
+              <div class="auth-motto" aria-label="Organisation guiding phrase">
+                <p class="auth-motto__text">“इतिहासबोधेन कर्तव्यमार्ग”</p>
+              </div>
+
+              <section
+                class="slideshow"
+                aria-roledescription="carousel"
+                aria-label="Heritage fort visuals">
+                <div class="slideshow__viewport" tabindex="-1">
+                  <!-- Slide 1 -->
+                  <figure
+                    class="slideshow__slide slideshow__slide--active"
+                    data-slide-index="0"
+                    aria-roledescription="slide"
+                    aria-label="1 of 3">
+                    <img
+                      src="{% static 'images/slide1.jpg' %}"
+                      alt="Historic fort walls under dramatic sky"
+                      class="slideshow__image"
+                    />
+                  </figure>
+
+                  <!-- Slide 2 -->
+                  <figure
+                    class="slideshow__slide"
+                    data-slide-index="1"
+                    aria-roledescription="slide"
+                    aria-label="2 of 3">
+                    <img
+                      src="{% static 'images/slide2.jpg' %}"
+                      alt="Saffron flag above a Sahyadri fort"
+                      class="slideshow__image"
+                    />
+                  </figure>
+
+                  <!-- Slide 3 (duplicate for smooth loop) -->
+                  <figure
+                    class="slideshow__slide"
+                    data-slide-index="2"
+                    aria-roledescription="slide"
+                    aria-label="3 of 3">
+                    <img
+                      src="{% static 'images/slide3.jpg' %}"
+                      alt="Fort sunset"
+                      class="slideshow__image"
+                    />
+                  </figure>
+                </div>
+
+                <!-- Controls / indicators (no captions) -->
+                <div class="slideshow__controls">
+                  <button
+                    class="slideshow__control slideshow__control--prev"
+                    type="button"
+                    aria-label="Previous slide">
+                    ‹
+                  </button>
+                  <div class="slideshow__indicators" role="tablist" aria-label="Choose slide">
+                    <button
+                      type="button"
+                      class="slideshow__indicator slideshow__indicator--active"
+                      data-target-slide="0"
+                      role="tab"
+                      aria-selected="true"
+                      aria-label="Show slide 1">
+                    </button>
+                    <button
+                      type="button"
+                      class="slideshow__indicator"
+                      data-target-slide="1"
+                      role="tab"
+                      aria-selected="false"
+                      aria-label="Show slide 2">
+                    </button>
+                    <button
+                      type="button"
+                      class="slideshow__indicator"
+                      data-target-slide="2"
+                      role="tab"
+                      aria-selected="false"
+                      aria-label="Show slide 3">
+                    </button>
+                  </div>
+                  <button
+                    class="slideshow__control slideshow__control--next"
+                    type="button"
+                    aria-label="Next slide">
+                    ›
+                  </button>
+                </div>
+
+                <p class="slideshow__announcement" aria-live="polite"></p>
+
+                <noscript>
+                  <p class="slideshow__noscript">
+                    JavaScript is disabled; showing the first image only.
+                  </p>
+                </noscript>
+              </section>
+            </div>
+          </aside>
+
+          <!-- Right panel: LOGIN ONLY -->
+          <section class="auth-card__right" aria-label="Login">
+            <!-- Move logo above the form for stronger visibility -->
+            <div class="auth-card__right-top">
+              <div class="brand-badge" aria-hidden="true">
+                <img
+                  src="{% static 'images/सेवक सह्याद्रीचे_20250102_205646_0000.png' %}"
+                  alt="Organisation Emblem"
+                  class="brand-badge__image"
+                />
+              </div>
+            </div>
+
+            <header class="auth-form-header">
+              <h1 id="auth-login-title" class="auth-form-title">
+                Member Login
+              </h1>
+            </header>
+
+            <!-- Login form -->
+            <!-- For Django: change action to  and add {% csrf_token %} -->
+            <form
+              class="form form--login-only"
+              method="post"
+              action=""
+              novalidate
+              aria-describedby="login-description">
+
+              <!-- Inside Django template, replace the next line with {% csrf_token %} -->
+              <!-- {% csrf_token %} -->
+              {% csrf_token %}
+
+              <p id="login-description" class="form__description">
+                Enter the username or email and password provided by your organisation.
+              </p>
+
+              <div class="form__field">
+                <label class="form__label" for="id_identifier">Username / Email</label>
+                <input
+                  id="id_identifier"
+                  name="identifier"
+                  type="text"
+                  required
+                  autocomplete="username"
+                  class="form__input"
+                  aria-describedby="identifier-error">
+                <p
+                  class="form__error"
+                  id="identifier-error"
+                  role="status"
+                  aria-live="polite">
+                </p>
+              </div>
+
+              <div class="form__field form__field--password">
+                <label class="form__label" for="id_password_login">Password</label>
+                <div class="form__password-wrapper">
+                  <input
+                    id="id_password_login"
+                    name="password"
+                    type="password"
+                    required
+                    minlength="8"
+                    autocomplete="current-password"
+                    class="form__input form__input--password"
+                    aria-describedby="password-login-error">
+                  <button
+                    type="button"
+                    class="form__password-toggle"
+                    aria-label="Show password"
+                    aria-pressed="false">
+                    👁
+                  </button>
+                </div>
+                <p
+                  class="form__error"
+                  id="password-login-error"
+                  role="status"
+                  aria-live="polite">
+                </p>
+              </div>
+
+              <div class="form__actions form__actions--login-only">
+                <button type="submit" class="button button--primary">
+                  Log in
+                </button>
+              </div>
+            </form>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+
+  <script src="{% static 'js/myjs_script.js' %}"></script>
+
+</body>
+</html>

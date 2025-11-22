@@ -1,0 +1,118 @@
+{% extends 'dashboard.html' %}
+
+{% load static %}
+{% block title %}update task{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+<h1>Update Task</h1>
+
+<br>
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+<br>
+
+<form action="{% url 'update_assign_task_to_leader' %}" method="post" id="AdminTaskAssign">
+
+  {% csrf_token %}
+{% for data in data %}
+  <input type="hidden" name="tid" value="{{ data.id }}">
+
+  <div>
+    <label for="task_title">Task Title:</label>
+    <input type="text" name="task_title" class="form-control" value="{{ data.task_title }}">
+    <div id="taskTitleError" class="error"></div>
+  </div>
+
+  <div>
+    <label for="task_description">Task Description:</label>
+    <textarea name="task_description" class="form-control" rows="3" >{{ data.task_description }}</textarea>
+    <div id="taskDescError" class="error"></div>
+  </div>
+
+  <!-- Group Dropdown -->
+  <div>
+    <label for="group_id">Select Group:</label>
+    <select id="group_id" name="group_id" class="form-control">
+      {% for group in group_name %}
+         <option value="{{ group.id }}"
+            {% if data.Group.id == group.id %} selected {% endif %}>
+            {{ group.group_name }}
+         </option>
+      {% endfor %}
+    </select>
+    <div id="taskGroupIdError" class="error"></div>
+  </div>
+
+  <!-- Leader Dropdown (auto-updated via JS) -->
+  <div>
+    <label for="leader_id">Select Leader:</label>
+    <select id="leader_id" name="leader_id" class="form-control" value="">
+      {% for leader in leader_name %}
+         <option value="{{ leader.id }}"
+             {% if data.Group.leader.id == leader.id %} selected {% endif %}>
+              {{ leader.volunteer_name }}
+         </option>
+      {% endfor %}
+    </select>
+    <div id="taskLeaderIdError" class="error"></div>
+  </div>
+
+  <!-- Hidden Task status -->
+
+  <input type="hidden" name="task_status" value="Pending">
+
+  <button type="submit" class="btn btn-primary mt-3">Update Task</button>
+{% endfor %}
+</form>
+</div>
+
+<!--Ajax for name of group leader with group name-->
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const groupSelect = document.getElementById("group_id");
+  const leaderSelect = document.getElementById("leader_id");
+
+  // When group changes -> update leader
+  groupSelect.addEventListener("change", function() {
+    const groupId = this.value;
+    if (!groupId) return;
+
+    fetch(`/get_leader_by_group/${groupId}/`)
+      .then(response => response.json())
+      .then(data => {
+        leaderSelect.innerHTML = `<option value="${data.leader_id}">${data.leader_name}</option>`;
+      })
+      .catch(error => console.error("Error fetching leader:", error));
+  });
+
+  // When leader changes -> update group
+  leaderSelect.addEventListener("change", function() {
+    const leaderId = this.value;
+    if (!leaderId) return;
+
+    fetch(`/get_group_by_leader/${leaderId}/`)
+      .then(response => response.json())
+      .then(data => {
+        groupSelect.innerHTML = `<option value="${data.group_id}">${data.group_name}</option>`;
+      })
+      .catch(error => console.error("Error fetching group:", error));
+  });
+
+});
+
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/myjs_script.js' %}"></script>
+{% endblock %}
+
