@@ -1,0 +1,49 @@
+{% for v in volunteers %}
+<tr class="clickable-row" data-href="{% url 'see_member_details' v.id %}">
+    <td>{{ forloop.counter }}</td>
+    <td>{{ v.volunteer_name }}</td>
+    <td>{{ v.volunteer_email }}</td>
+    <td>{{ v.volunteer_contact }}</td>
+    <td>{{ v.volunteer_pass }}</td>
+    <td>{{ v.volunteer_role.role_name }}</td>
+    <td>
+        <a href="{% url 'volunteer_update' v.id %}" class="btn btn-sm btn-secondary action-btn">Edit</a>
+        <a href="{% url 'volunteer_delete' v.id %}" class="btn btn-sm btn-danger action-btn" onclick="return confirm('Are you sure?')">Delete</a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="9" class="text-center">No volunteers found</td>
+</tr>
+{% endfor %}
+
+<!-- Add this JavaScript -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".clickable-row").forEach(row => {
+        row.addEventListener("click", function (event) {
+
+            // Prevent row click if clicked on button
+            if (event.target.closest(".action-btn")) {
+                return; // only button should work
+            }
+
+            const url = this.dataset.href;
+            if (url) window.location.href = url;
+        });
+    });
+
+});
+</script>
+
+<style>
+/* Highlight on hover */
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.25s;
+}
+.clickable-row:hover {
+    background-color: #ffdfdf !important;
+}
+</style>

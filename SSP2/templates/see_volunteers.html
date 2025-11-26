@@ -1,0 +1,97 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block title %}Volunteers List{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1>Volunteers List</h1>
+    {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+<!-- Search Box -->
+<form id="filterForm" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <select id="filterType" class="form-control">
+            <option value="name">Name</option>
+            <option value="email">Email</option>
+            <option value="contact">Contact</option>
+            <option value="role">Role</option>
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <input type="text" id="filterValue" class="form-control" placeholder="Enter search value">
+    </div>
+
+    <div class="col-md-1">
+        <button type="button" id="clearBtn" class="btn btn-warning w-100">Clear</button>
+    </div>
+</form>
+
+<!-- Table -->
+<table class="table table-striped table-bordered mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Contact</th>
+            <th>Password</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="volunteerResults">
+        {% include "volunteer_search_result.html" with volunteers=volunteers %}
+    </tbody>
+</table>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+
+
+<script src="{% static 'js/myjs_script.js' %}?v={{ timestamp }}"></script>
+
+<script>
+function activateRow() {
+    document.querySelectorAll(".click-row").forEach(row => {
+        row.addEventListener("click", () => {
+            window.location = row.dataset.href;
+        });
+    });
+}
+activateRow();
+
+let timer, delay = 300;
+
+function fetchVolunteers() {
+    let type = document.getElementById("filterType").value;
+    let value = document.getElementById("filterValue").value;
+
+    fetch(`/volunteer_search_result/?filter_type=${type}&filter_value=${value}`)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById("volunteerResults").innerHTML = html;
+            activateRow();
+        });
+}
+
+document.getElementById("filterValue").addEventListener("keyup", function () {
+    clearTimeout(timer);
+    timer = setTimeout(fetchVolunteers, delay);
+});
+
+document.getElementById("filterType").addEventListener("change", fetchVolunteers);
+
+document.getElementById("clearBtn").addEventListener("click", function () {
+    document.getElementById("filterValue").value = "";
+    fetchVolunteers();
+});
+</script>
+{% endblock %}

@@ -10,6 +10,7 @@ from django.conf import settings
 from .form import Volunteer
 from .models import *
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
 
 # only showing pages only
 
@@ -47,10 +48,6 @@ def volunteer_update(request,id):
     data= Volunteer.objects.filter(id= id)
     roles = Role_set.objects.all()
     return render(request,"update_volunteer.html",{"data":data, "roles":roles})
-
-def group_dashboard(request):
-    group_data = Groupcreate.objects.all().order_by('-id')
-    return render(request,"Group_dashboard.html",{'group': group_data})
 
 def create_group(request):
     volunteer_data = Volunteer.objects.filter(
@@ -127,9 +124,6 @@ def view_members(request):
     }
     return render(request,"see_members_with_group.html", context)
 
-def task_dashboard(request):
-    return render(request,"task_dashboard.html")
-
 def create_task(request):
     leader_name = Volunteer.objects.filter(
         volunteer_role__role_name__icontains="Group Leader"
@@ -169,8 +163,8 @@ def get_group_by_leader(request, leader_id):
         return JsonResponse({'error': 'Group not found for this leader'}, status=404)
 
 def see_assigned_task(request):
-    task_details= Task_management.objects.all()
-    return render(request,"see_assigned_task.html", {"task_details":task_details})
+    tasks= Task_management.objects.all()
+    return render(request,"see_assigned_task.html", {"tasks":tasks})
 
 def task_update(request, task_id):
     leader_name = Volunteer.objects.filter(volunteer_role__role_name__icontains="Group Leader")
@@ -209,6 +203,86 @@ def see_task_details(request,task_id):
     data = Task_management.objects.filter(id=task_id)
     status_choices = ["Pending", "In-Progress", "Completed", "Rejected"]
     return render(request,"see_task_details.html", {"data":data, "status_choices":status_choices})
+
+def view_search_tasks(request):
+    tasks = Task_management.objects.all()
+    return render(request, "view_tasks.html", {"tasks": tasks})
+
+def task_search_result(request):
+    tasks = Task_management.objects.all()
+
+    allowed_filters = {
+        "title": "task_title__icontains",
+        "group": "Group__group_name__icontains",
+        "status": "task_status__icontains",
+        # "created_at" will be handled separately (date parsing)
+    }
+
+    filter_type = request.GET.get("filter_type")
+    filter_value = request.GET.get("filter_value", "").strip()
+
+    if filter_type and filter_value:
+        # CREATED_AT special handling (DateField)
+        if filter_type == "created_at":
+            parsed_date = None
+
+            # Try common date formats
+            date_formats = ("%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d", "%d/%m/%Y")
+            for fmt in date_formats:
+                try:
+                    parsed_date = datetime.strptime(filter_value, fmt).date()
+                    break
+                except ValueError:
+                    parsed_date = None
+
+            if parsed_date:
+                # exact date match
+                tasks = tasks.filter(task_created_at=parsed_date)
+            else:
+                # Maybe user entered a year (e.g. "2025")
+                if filter_value.isdigit():
+                    year = int(filter_value)
+                    # safe year filter
+                    tasks = tasks.filter(task_created_at__year=year)
+                else:
+                    # Not a valid date/year — do not apply any created_at filter.
+                    # (This prevents FieldError and returns unfiltered results.)
+                    pass
+
+        # OTHER filters (safe lookup map)
+        elif filter_type in allowed_filters:
+            lookup = {allowed_filters[filter_type]: filter_value}
+            tasks = tasks.filter(**lookup)
+
+    return render(request, "task_search_result.html", {"tasks":tasks})
+
+def see_volunteers(request):
+    volunteers = Volunteer.objects.all().order_by('-id')
+    return render(request, "see_volunteers.html", {"volunteers": volunteers})
+
+def volunteer_search_result(request):
+    volunteers = Volunteer.objects.all()
+
+    filter_type = request.GET.get("filter_type")
+    filter_value = request.GET.get("filter_value", "").strip()
+
+    if filter_type and filter_value:
+        if filter_type == "name":
+            volunteers = volunteers.filter(volunteer_name__icontains=filter_value)
+        elif filter_type == "email":
+            volunteers = volunteers.filter(volunteer_email__icontains=filter_value)
+        elif filter_type == "contact":
+            volunteers = volunteers.filter(volunteer_contact__icontains=filter_value)
+        elif filter_type == "role":
+            volunteers = volunteers.filter(volunteer_role__role_name__icontains=filter_value)
+
+    return render(request, "volunteer_search_result.html", {"volunteers": volunteers})
+
+def see_member_details(request, mem_id):
+    member_data= Volunteer.objects.filter(id= mem_id)
+    return render(request, "see_member_details.html",{"member":member_data})
+
+
 
 
 
@@ -266,14 +340,14 @@ def volunteer_save(request):
         #     fail_silently=False,
         # )
         # messages.success(request,"Email has been sent to new volunteer!")
-        return redirect("/set_volunteer")
+        return redirect("/see_volunteers")
     else:
         messages.error(request,"Something wrong!")
         return redirect("/set_volunteer")
 
 def volunteer_delete(request,id):
     Volunteer.objects.filter(id= id).delete()
-    return redirect("/set_volunteer")
+    return redirect("/see_volunteers")
 
 def save_updated_volunteer(request):
     if request.method == "POST":
@@ -327,7 +401,7 @@ def save_updated_volunteer(request):
         #     fail_silently=False,
         # )
         messages.success(request,f"Data has been updated of {vname}!")
-        return redirect("set_volunteer")
+        return redirect("see_volunteers")
     else:
         messages.error(request, "Something wrong!")
         return redirect("volunteer_update")
@@ -673,9 +747,6 @@ def mark_notification_read(request):
 
     return JsonResponse({"error": "POST method required"}, status=405)
 
-def logout(request):
-    return redirect("/")
-
 def update_task_status(request):
     if request.method == "POST":
         tid = request.POST.get("tid")
@@ -698,3 +769,6 @@ def update_task_status(request):
 
     messages.error(request, "Something went wrong, Task not updated!")
     return redirect("assigned_tasks")  # Use a safe fallback page
+
+def logout(request):
+    return redirect("/")

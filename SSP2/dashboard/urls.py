@@ -8,14 +8,12 @@ urlpatterns = [
     path('set_volunteer/', views.set_volunteer, name='set_volunteer'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('volunteer_update/<int:id>/', views.volunteer_update, name='volunteer_update'),
-    path('group_dashboard/', views.group_dashboard, name='group_dashboard'),
     path('create_group/', views.create_group, name='create_group'),
     path('group_see/', views.group_see, name='group_see'),
     path('group_see/<int:group_id>/add-members/', views.add_members_view, name='add_members'),
     path('see_members_with_group/', views.view_members, name='view_members'),
     path('get_leader_by_group/<int:group_id>/', views.get_leader_by_group, name='get_leader_by_group'),
     path('get_group_by_leader/<int:leader_id>/', views.get_group_by_leader, name='get_group_by_leader'),
-    path('task_dashboard/', views.task_dashboard, name='task_dashboard'),
     path('create_task/', views.create_task, name='create_task'),
     path('see_assigned_task', views.see_assigned_task, name='see_assigned_task'),
     path('task_update/<int:task_id>/', views.task_update, name='task_update'),
@@ -26,6 +24,13 @@ urlpatterns = [
     path('see_notification/', views.see_notification, name= 'see_notification'),
     path('update_profile/', views.update_profile, name='update_profile'),
     path('see_task_details/<int:task_id>/', views.see_task_details, name= 'see_task_details'),
+    path('view_search_tasks/', views.view_search_tasks, name='view_search_tasks'),
+    path('task_search_result/', views.task_search_result, name='task_search_result'),
+    path("see_volunteers/", views.see_volunteers, name="see_volunteers"),
+    path("volunteer_search_result/", views.volunteer_search_result, name="volunteer_search_result"),
+    path('see_member_details/<int:mem_id>/', views.see_member_details, name='see_member_details'),
+
+
 
 
 

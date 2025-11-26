@@ -1,0 +1,18 @@
+{% for task in tasks %}
+<tr class="clickable-row" data-href="{% url 'see_task_details' task.id %}">
+    <td>{{ forloop.counter }}</td>
+    <td>{{ task.task_title }}</td>
+    <td>{{ task.Group.group_name }}</td>
+    <td>{{ task.task_created_at|date:"d M Y" }}</td>
+    <td>{{ task.task_status }}</td>
+    <td>{{ task.task_reject_reason }}</td>
+    <td>
+        <a href="{% url 'task_update' task.id %}" class="btn btn-sm btn-secondary">Edit</a>
+        <a href="{% url 'task_delete' task.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="7" class="text-center">No tasks found</td>
+</tr>
+{% endfor %}

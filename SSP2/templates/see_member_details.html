@@ -1,0 +1,106 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+.readonly-box input,
+.readonly-box textarea {
+    background: #f7f7f7;
+    cursor: not-allowed;
+}
+
+.member-photo {
+    width: 220px;
+    height: 220px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
+
+.back-btn {
+    margin-top: 20px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+<h1>Member Details</h1>
+<hr>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+{% for data in member %}
+
+<div class="row">
+
+    <!-- Profile Photo -->
+    <div class="col-md-3">
+        {% if data.profile_photo %}
+            <img src="{{ data.profile_photo.url }}" class="member-photo" alt="Profile Photo">
+        {% else %}
+            <img src="{% static 'images/default.png' %}" class="member-photo" alt="Profile Photo">
+        {% endif %}
+    </div>
+
+    <div class="col-md-9 readonly-box">
+
+        <div class="mb-3">
+            <label>Volunteer Name:</label>
+            <input type="text" class="form-control" value="{{ data.volunteer_name }}" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label>Email:</label>
+            <input type="email" class="form-control" value="{{ data.volunteer_email }}" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label>Contact:</label>
+            <input type="text" class="form-control" value="{{ data.volunteer_contact }}" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label>Password:</label>
+            <input type="password" class="form-control" value="{{ data.volunteer_pass }}" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label>Role:</label>
+            <input type="text" class="form-control" value="{{ data.volunteer_role.role_name }}" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label>Birthday:</label>
+            <input type="text" class="form-control" value="{{ data.volunteer_birthday }}" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label>Address:</label>
+            <textarea class="form-control" rows="2" readonly>{{ data.volunteer_address }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label>Registered Date:</label>
+            <input type="text" class="form-control" value="{{ data.volunteer_regi_datetime }}" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label>Last Updated:</label>
+            <input type="text" class="form-control" value="{{ data.volunteer_update_regi_datetime }}" readonly>
+        </div>
+
+    </div>
+</div>
+
+<a href="{% url 'see_volunteers' %}" class="btn btn-secondary back-btn">Back</a>
+
+{% endfor %}
+
+</div>
+{% endblock %}
