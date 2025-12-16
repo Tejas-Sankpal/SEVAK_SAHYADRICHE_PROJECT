@@ -55,6 +55,8 @@ class Volunteers_group(models.Model):
         limit_choices_to= {'volunteer_role':'Member'}
     )
 
+
+
 # 5th model of task for leader from admin
 class Task_management(models.Model):
     task_title= models.CharField(max_length= 100, default= "0")
@@ -85,4 +87,22 @@ class Notification(models.Model):
     is_read= models.BooleanField(default=False)
 
 #7th model for create subtask
+class Sub_task_managemnet(models.Model):
+    task_id= models.ForeignKey(
+        Task_management,
+        on_delete= models.CASCADE,
+        related_name= 'sub_task_title'
+    )
+    subtask_description= models.TextField(default= '0')
+    assigned_subtask_to = models.ForeignKey(
+        Volunteers_group,
+        on_delete=models.CASCADE,
+        related_name='name_of_volunteer',
+        limit_choices_to={'volunteer_role': 'Member'}
+    )
+    subtask_status= models.CharField(max_length= 100,
+                                  choices=[("Pending","Pending"), ("In Progress", "In Progress"), ("Complete", "Complete"), ("Rejected", "Rejected")],
+                                  default= "Pending")
+    subtask_created_at= models.DateField(auto_now_add= True)
+    subtask_updated_at= models.DateField(auto_now= True)
 

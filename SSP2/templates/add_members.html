@@ -2,79 +2,147 @@
 {% load static %}
 
 {% block title %}Add Members{% endblock %}
+{% block extra_css%}
+<!-- Using global design system - no custom styles needed -->
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <h2>Add Members to: <span class="text-primary">{{ group.group_name }}</span></h2>
-    <p>Group Leader: <strong>{{ group.leader.volunteer_name }}</strong></p>
-
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-
-    <hr>
-
-    <h4>Available Volunteers</h4>
-    <table class="table table-striped table-bordered align-middle text-center mt-3">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Current Group</th>
-                <th>Leader</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for data in volunteers %}
-            <tr>
-                <td>{{ forloop.revcounter }}</td>
-                <td>{{ data.volunteer_obj.volunteer_name }}</td>
-                <td>{{ data.volunteer_obj.volunteer_email }}</td>
-                <td>{{ data.volunteer_obj.volunteer_role }}</td>
-                <td>{{ data.current_group }}</td>
-                <td>{{ data.current_leader }}</td>
-                <td>
-                    {% if data.is_in_group %}
-                        <button class="btn btn-secondary btn-sm" disabled>Already Assigned</button>
-                        <a href="{% url 'remove_volunteer' group.id data.volunteer_obj.id %}"
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('Remove this volunteer?')">
-                           Remove
-                        </a>
-                    {% else %}
-                        <form action="{% url 'assign_volunteer' group.id data.volunteer_obj.id %}" method="post" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-success btn-sm">Add to Group</button>
-                        </form>
-                    {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" class="text-center">No Members found</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="mt-4">
-        <a href="{% url 'group_see' %}" class="btn btn-outline-secondary me-2">
-            <i class="bi bi-arrow-left-circle"></i> Back
-        </a>
-        <a href="{% url 'send_group_list_leader' group.id %}" class="btn btn-primary">
-            <i class="bi bi-envelope"></i> Send Mail to Leader
-        </a>
+  <!-- Header Section -->
+  <div class="d-flex justify-content-between align-items-start flex-wrap mb-4">
+    <div>
+      <h1>Add Members to Group</h1>
+      <p class="text-muted">Manage volunteers in <strong>{{ group.group_name }}</strong></p>
     </div>
+    <div class="card shadow-sm" style="min-width: 200px;">
+      <div class="card-body text-center">
+        <small class="text-muted text-uppercase d-block mb-2">Group Leader</small>
+        <strong class="text-primary">{{ group.leader.volunteer_name }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alerts Section -->
+  {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Available Volunteers Section -->
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+      <h2>Available Volunteers</h2>
+      <span class="badge bg-primary">{{ volunteers|length }} total</span>
+    </div>
+
+    <!-- Responsive Table -->
+    {% if volunteers %}
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th class="d-none d-md-table-cell">Email</th>
+              <th class="d-none d-lg-table-cell">Role</th>
+              <th>Current Group</th>
+              <th class="d-none d-lg-table-cell">Leader</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for data in volunteers %}
+              <tr>
+                <td>{{ forloop.revcounter }}</td>
+                <td><strong>{{ data.volunteer_obj.volunteer_name }}</strong></td>
+                <td class="d-none d-md-table-cell">
+                  <a href="mailto:{{ data.volunteer_obj.volunteer_email }}" class="text-decoration-none">
+                    {{ data.volunteer_obj.volunteer_email }}
+                  </a>
+                </td>
+                <td class="d-none d-lg-table-cell">
+                  <span class="badge bg-secondary">{{ data.volunteer_obj.volunteer_role }}</span>
+                </td>
+                <td>
+                  <span class="badge {% if data.current_group == 'None' %}bg-secondary{% else %}bg-primary{% endif %}">
+                    {{ data.current_group }}
+                  </span>
+                </td>
+                <td class="d-none d-lg-table-cell">{{ data.current_leader }}</td>
+                <td>
+                  <div class="d-flex gap-2 flex-wrap">
+                    {% if data.is_in_group %}
+                      <button type="button" class="btn btn-sm btn-secondary" disabled>
+                        Already Assigned
+                      </button>
+                      <a href="{% url 'remove_volunteer' group.id data.volunteer_obj.id %}"
+                         class="btn btn-sm btn-danger"
+                         onclick="return confirm('Are you sure you want to remove this volunteer from the group?');">
+                        Remove
+                      </a>
+                    {% else %}
+                      <form action="{% url 'assign_volunteer' group.id data.volunteer_obj.id %}"
+                            method="post"
+                            class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-success">
+                          Add to Group
+                        </button>
+                      </form>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <!-- Empty State -->
+      <div class="text-center py-5 border rounded">
+        <div class="mb-3" style="font-size: 3rem;">👥</div>
+        <h3>No Members Found</h3>
+        <p class="text-muted">There are no available volunteers to add at this time.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="d-flex gap-2 flex-wrap pt-3 border-top">
+    <a href="{% url 'group_see' %}" class="btn btn-secondary">
+      <i class="bi bi-arrow-left"></i> Back to Groups
+    </a>
+    <a href="{% url 'send_group_list_leader' group.id %}" class="btn btn-primary">
+      <i class="bi bi-envelope"></i> Send Mail to Leader
+    </a>
+  </div>
 </div>
+
 {% endblock %}
 
-{% block extra_js %}
-<script src="{% static 'js/myjs_script.js' %}"></script>
+{% block extra_js%}
+{{ block.super }}
+
+<script>
+// Add Members - Interactive Features
+document.addEventListener("DOMContentLoaded", () => {
+  // Add animation to form submissions
+  const assignForms = document.querySelectorAll("form[action*='assign_volunteer']")
+  assignForms.forEach((form) => {
+    form.addEventListener("submit", function () {
+      const btn = this.querySelector("button")
+      if (btn) {
+        btn.disabled = true
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Adding...'
+      }
+    })
+  })
+})
+</script>
 {% endblock %}

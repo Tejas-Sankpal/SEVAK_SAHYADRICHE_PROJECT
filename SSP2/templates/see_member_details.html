@@ -1,33 +1,43 @@
 {% extends 'dashboard.html' %}
 {% load static %}
 
+{% block title %}Members Details{% endblock %}
+
 {% block extra_css %}
 <style>
 .readonly-box input,
 .readonly-box textarea {
-    background: #f7f7f7;
+    background: #f7fafc;
     cursor: not-allowed;
+    border-color: #e2e8f0;
 }
 
 .member-photo {
     width: 220px;
     height: 220px;
-    border-radius: 10px;
+    border-radius: 16px;
     object-fit: cover;
-    border: 2px solid #ddd;
+    border: 3px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.member-photo:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: scale(1.02);
 }
 
 .back-btn {
-    margin-top: 20px;
+    margin-top: 1.5rem;
 }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-
-<h1>Member Details</h1>
-<hr>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Member Details</h1>
+  </div>
 
 {% if messages %}
   {% for message in messages %}

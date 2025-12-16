@@ -1,0 +1,63 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}Update Subtask{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <h1>Update Subtask</h1>
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+<br>
+
+<form action="{% url 'update_assign_subtask_to_member' %}" method="post">
+  {% csrf_token %}
+
+  {% for data in data %}
+
+  <!-- Hidden ID -->
+  <input type="hidden" name="subtask_id" value="{{ data.id }}">
+
+  <!-- Task ID (value must be id, not title) -->
+  <div class="mb-3">
+      <label for="task_title">Task Title:</label>
+      <input type="text" class="form-control" value="{{ data.task_id.task_title }}" readonly>
+      <input type="hidden" name="task_title" value="{{ data.task_id.id }}">
+  </div>
+
+  <!-- Description -->
+  <div class="mb-3">
+    <label for="subtask_description">Task Description:</label>
+    <textarea name="subtask_description" class="form-control" rows="3">{{ data.subtask_description }}</textarea>
+  </div>
+
+  <!-- Assign To -->
+  <div class="mb-3">
+    <label for="subtask_assign_to">Assign To:</label>
+    <select id="subtask_assign_to" name="subtask_assign_to" class="form-control">
+      {% for member in members %}
+        <option value="{{ member.id }}"
+          {% if member.id == data.assigned_subtask_to.id %} selected {% endif %}>
+          {{ member.volunteer.volunteer_name }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <input type="hidden" name="subtask_status" value="Pending">
+
+  <div class="d-flex gap-2 mt-4">
+    <button type="submit" class="btn btn-primary">Update Task</button>
+    <a href="{% url 'see_assigned_task' %}" class="btn btn-secondary">Back</a>
+  </div>
+
+  {% endfor %}
+</form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+{% endblock %}

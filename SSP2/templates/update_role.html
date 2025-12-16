@@ -4,45 +4,40 @@
 {% block title %}update Role{% endblock %}
 
 {% block extra_css %}
- <style>
-     .error {
-  color: red;
-  font-size: 14px;
-}
-form div {
-  margin-bottom: 12px;
-}
-
-/* Base style for inputs */
-input, select {
-  padding-right: 30px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  outline: none;
+<style>
+/* Validation styles - integrated with global design system */
+.error {
+  color: #e53e3e;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: block;
+  font-weight: 500;
 }
 
 /* Valid input → green border + ✔ */
 input.valid, select.valid {
-  border-color: green;
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><text x='0' y='15' font-size='18' fill='green'>✔</text></svg>") no-repeat right 8px center;
-  background-size: 20px 20px;
+  border-color: #48bb78 !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><text x='0' y='15' font-size='18' fill='%2348bb78'>✔</text></svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 8px center !important;
+  background-size: 20px 20px !important;
 }
 
 /* Invalid input → red border + ✖ */
 input.invalid, select.invalid {
-  border-color: red;
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><text x='0' y='15' font-size='18' fill='red'>✖</text></svg>") no-repeat right 8px center;
-  background-size: 20px 20px;
+  border-color: #e53e3e !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><text x='0' y='15' font-size='18' fill='%23e53e3e'>✖</text></svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 8px center !important;
+  background-size: 20px 20px !important;
 }
- </style>
-
-
+</style>
 {% endblock %}
 
 {% block content %}
 
 <div class="container-fluid">
-  <h2 class="mb-4">Add Role</h2>
+  <h1>Update Role</h1>
 
    {% if messages %}
     {% for message in messages %}

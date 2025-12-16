@@ -164,7 +164,8 @@ def get_group_by_leader(request, leader_id):
 
 def see_assigned_task(request):
     tasks= Task_management.objects.all()
-    return render(request,"see_assigned_task.html", {"tasks":tasks})
+    sub_tasks= Sub_task_managemnet.objects.all()
+    return render(request,"see_assigned_task.html", {"tasks":tasks, "sub_tasks": sub_tasks})
 
 def task_update(request, task_id):
     leader_name = Volunteer.objects.filter(volunteer_role__role_name__icontains="Group Leader")
@@ -199,10 +200,24 @@ def see_notification(request):
 def update_profile(request):
     return render(request,"update_profile.html")
 
-def see_task_details(request,task_id):
-    data = Task_management.objects.filter(id=task_id)
-    status_choices = ["Pending", "In-Progress", "Completed", "Rejected"]
-    return render(request,"see_task_details.html", {"data":data, "status_choices":status_choices})
+def see_task_details(request, task_id):
+    task = Task_management.objects.get(id=task_id)
+
+    status_choices = ["In-Progress", "Completed", "Rejected"]
+
+    group_members_data = Volunteers_group.objects.filter(
+        groupcreate=task.Group
+    )
+
+    return render(
+        request,
+        "see_task_details.html",
+        {
+            "task": task,
+            "status_choices": status_choices,
+            "Group_Members": group_members_data,
+        }
+    )
 
 def view_search_tasks(request):
     tasks = Task_management.objects.all()
@@ -281,6 +296,43 @@ def volunteer_search_result(request):
 def see_member_details(request, mem_id):
     member_data= Volunteer.objects.filter(id= mem_id)
     return render(request, "see_member_details.html",{"member":member_data})
+
+def see_subtask_details(request, member_id):
+    subtask_data= Sub_task_managemnet.objects.filter(id= member_id)
+    status_choices = ["In-Progress", "Completed"]
+    return render(request,"see_subtask_details.html", {'subtask_data':subtask_data, 'status_choices':status_choices})
+
+def update_subtask(request, member_id):
+    data= Sub_task_managemnet.objects.filter(id= member_id)
+    members= Volunteers_group.objects.all()
+    return render(request,"update_subtask.html", {"data":data, "members":members})
+
+def subtask_search_result(request):
+    filter_type = request.GET.get('filter_type')
+    filter_value = request.GET.get('filter_value')
+
+    sub_tasks = Sub_task_managemnet.objects.select_related(
+        'task_id',
+        'assigned_subtask_to__volunteer'
+    )
+
+    if filter_value:
+        if filter_type == "title":
+            sub_tasks = sub_tasks.filter(
+                task_id__task_title__icontains=filter_value
+            )
+        elif filter_type == "member":
+            sub_tasks = sub_tasks.filter(
+                assigned_subtask_to__volunteer__volunteer_name__icontains=filter_value
+            )
+        elif filter_type == "status":
+            sub_tasks = sub_tasks.filter(
+                subtask_status__icontains=filter_value
+            )
+
+    return render(request, "subtask_search_result.html", {
+        "sub_tasks": sub_tasks
+    })
 
 
 
@@ -599,7 +651,7 @@ def assign_task_to_leader(request):
 def task_delete(request, task_id):
     task= Task_management.objects.filter(id=task_id)
     task.delete()
-    return redirect("see_assigned_task")
+    return redirect("/see_assigned_task")
 
 
 def update_assign_task_to_leader(request):
@@ -769,6 +821,69 @@ def update_task_status(request):
 
     messages.error(request, "Something went wrong, Task not updated!")
     return redirect("assigned_tasks")  # Use a safe fallback page
+
+def assign_task_to_members(request):
+    if request.method == "POST":
+        task_id = request.POST["task_id"]
+        subtask_description = request.POST["subtask_description"]
+        subtask_assigned_to = request.POST["subtask_assign_to"]
+        subtask_status = request.POST["subtask_status"]
+
+        task_id_obj= Task_management.objects.get(id= task_id)
+        subtask_assigned_to_obj= Volunteers_group.objects.get(id= subtask_assigned_to)
+
+        subtask_create= Sub_task_managemnet(task_id= task_id_obj, subtask_description= subtask_description, assigned_subtask_to= subtask_assigned_to_obj, subtask_status= subtask_status)
+        subtask_create.save()
+
+        messages.success(request, "Subtask is created")
+        return redirect("see_task_details", task_id=task_id)
+
+    messages.error(request,"Something wants Wrong!")
+    return redirect("see_task_details", task_id=task_id)
+
+def update_subtask_status(request):
+    if request.method == "POST":
+        tid = request.POST.get("subtask_id")
+        status = request.POST.get("task_status")
+
+        Sub_task_managemnet.objects.filter(id=tid).update(
+                subtask_status=status
+        )
+
+        messages.success(request, "Task Status Updated Successfully!")
+        return redirect("see_assigned_task")
+
+    messages.error(request, "Something went wrong, Task not updated!")
+    return redirect("see_assigned_task")
+
+def update_assign_subtask_to_member(request):
+    if request.method == "POST":
+        subtask_id = request.POST["subtask_id"]
+        task_id = request.POST["task_title"]
+        subtask_assigned_to = request.POST["subtask_assign_to"]
+        subtask_description = request.POST["subtask_description"]
+        subtask_status = request.POST["subtask_status"]
+
+        task_id_obj = Task_management.objects.get(id=task_id)
+        subtask_assigned_to_obj = Volunteers_group.objects.get(id=subtask_assigned_to)
+
+        Sub_task_managemnet.objects.filter(id=subtask_id).update(
+            task_id=task_id_obj,
+            subtask_description=subtask_description,
+            assigned_subtask_to=subtask_assigned_to_obj,
+            subtask_status=subtask_status
+        )
+
+        messages.success(request, "Subtask Updated Successfully!")
+        return redirect("see_assigned_task")
+
+    messages.error(request, "Something went wrong, Task not updated!")
+    return redirect("update_subtask")
+
+def delete_subtask(request, member_id):
+    subtask = Sub_task_managemnet.objects.filter(id= member_id)
+    subtask.delete()
+    return redirect("see_assigned_task")
 
 def logout(request):
     return redirect("/")

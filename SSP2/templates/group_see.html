@@ -5,91 +5,173 @@
 
 {% block content %}
 <div class="container-fluid">
-
-    <h2>Groups List</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Groups List</h1>
+        <a href="{% url 'create_group' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add New Group
+        </a>
+    </div>
 
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endfor %}
     {% endif %}
 
-    <table class="table table-striped text-center align-middle mt-3">
-        <thead>
-            <tr>
-                <th>Group Id</th>
-                <th>Group Name</th>
-                <th>Group Leader Name</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for i in group %}
-            <tr>
-                <td>{{ forloop.revcounter }}</td>
-                <td>{{ i.group_name }}</td>
-                <td>{{ i.leader }}</td>
-                <td>
-                    <div class="dropdown">
-                        <button class="btn btn-link text-dark p-0" data-bs-toggle="dropdown">&#8942;</button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item open-modal"
-                                   data-mode="view"
-                                   data-id="{{ i.id }}"
-                                   data-name="{{ i.group_name }}"
-                                   data-leader="{{ i.leader }}"
-                                   data-members="{% for m in i.volunteers_group_name.all %}{{ m.volunteer.volunteer_name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
-                                   data-groupcreated="{{ i.group_regi_date }}"
-                                   data-groupupdated="{{ i.group_update_regi_date }}">
-                                    View Group
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item open-modal"
-                                   data-mode="edit"
-                                   data-id="{{ i.id }}"
-                                   data-name="{{ i.group_name }}"
-                                   data-leader="{{ i.leader }}"
-                                   data-members="{% for m in i.volunteers_group_name.all %}{{ m.volunteer.volunteer_name }}{% if not forloop.last %}, {% endif %}{% endfor %}">
-                                    Edit Group
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'add_members' group_id=i.id %}">Add Members</a>
-                            </li>
-                            <li>
-                                <a href="{% url 'group_delete' i.id %}" class="dropdown-item" onclick="return confirm('Are you sure ?')">Delete Group</a>
-                            </li>
-                        </ul>
-                    </div>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4" class="text-center">No Group found</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Group Name</th>
+                    <th>Group Leader</th>
+                    <th>Members Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in group %}
+                <tr>
+                    <td><strong>{{ forloop.revcounter }}</strong></td>
+                    <td>
+                        <strong class="text-primary">{{ i.group_name }}</strong>
+                    </td>
+                    <td>
+                        <span class="badge bg-info">{{ i.leader }}</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-secondary">{{ i.volunteers_group_name.all|length }} members</span>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2 justify-content-center flex-wrap">
+                            <!-- View Button -->
+                            <button class="btn btn-sm btn-info text-white open-modal"
+                                    data-mode="view"
+                                    data-id="{{ i.id }}"
+                                    data-name="{{ i.group_name }}"
+                                    data-leader="{{ i.leader }}"
+                                    data-members="{% for m in i.volunteers_group_name.all %}{{ m.volunteer.volunteer_name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                                    data-groupcreated="{{ i.group_regi_date }}"
+                                    data-groupupdated="{{ i.group_update_regi_date }}"
+                                    title="View Group Details">
+                                <i class="bi bi-eye"></i> View
+                            </button>
+
+                            <!-- Edit Button -->
+                            <button class="btn btn-sm btn-warning text-white open-modal"
+                                    data-mode="edit"
+                                    data-id="{{ i.id }}"
+                                    data-name="{{ i.group_name }}"
+                                    data-leader="{{ i.leader }}"
+                                    data-members="{% for m in i.volunteers_group_name.all %}{{ m.volunteer.volunteer_name }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+                                    title="Edit Group">
+                                <i class="bi bi-pencil"></i> Edit
+                            </button>
+
+                            <!-- Add Members Button -->
+                            <a href="{% url 'add_members' group_id=i.id %}" 
+                               class="btn btn-sm btn-success"
+                               title="Add Members to Group">
+                                <i class="bi bi-person-plus"></i> Members
+                            </a>
+
+                            <!-- Send Mail Button -->
+                            <a href="{% url 'send_group_list_leader' i.id %}" 
+                               class="btn btn-sm btn-primary"
+                               title="Send Mail to Leader">
+                                <i class="bi bi-envelope"></i> Mail
+                            </a>
+
+                            <!-- Delete Button -->
+                            <a href="{% url 'group_delete' i.id %}" 
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Are you sure you want to delete this group? This action cannot be undone.');"
+                               title="Delete Group">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <div class="empty-state">
+                            <i class="bi bi-diagram-3" style="font-size: 3rem; color: #718096; display: block; margin-bottom: 1rem;"></i>
+                            <h3 class="text-muted">No Groups Found</h3>
+                            <p class="text-muted">Get started by creating your first group.</p>
+                            <a href="{% url 'create_group' %}" class="btn btn-primary mt-3">
+                                <i class="bi bi-plus-circle"></i> Create Group
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<!-- Modal for View/Edit -->
-<div class="modal fade" id="groupModal" tabindex="-1" aria-hidden="true">
+<!-- Enhanced Modal for View/Edit -->
+<div class="modal fade" id="groupModal" tabindex="-1" aria-labelledby="groupModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">Group</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="modalTitle">
+                    <i class="bi bi-diagram-3 me-2"></i>Group Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <!-- View Section -->
                 <div id="viewSection">
-                    <p><strong>Group Name:</strong> <span id="viewName"></span></p>
-                    <p><strong>Leader:</strong> <span id="viewLeader"></span></p>
-                    <p><strong>Members: </strong><span id="viewMembers"></span></p>
-                    <p><strong>Group Created: </strong><span id="viewGroupCreatedDate"></span></p>
-                    <p><strong>Group Updated: </strong><span id="viewGroupUpdatedDate"></span></p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <label class="text-muted small text-uppercase mb-1">Group Name</label>
+                                    <h5 class="mb-0" id="viewName"></h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <label class="text-muted small text-uppercase mb-1">Leader</label>
+                                    <h5 class="mb-0">
+                                        <span class="badge bg-info" id="viewLeader"></span>
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <label class="text-muted small text-uppercase mb-2">Members</label>
+                                    <p class="mb-0" id="viewMembers"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <label class="text-muted small text-uppercase mb-1">Created Date</label>
+                                    <p class="mb-0" id="viewGroupCreatedDate"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-body">
+                                    <label class="text-muted small text-uppercase mb-1">Last Updated</label>
+                                    <p class="mb-0" id="viewGroupUpdatedDate"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Edit Section -->
@@ -98,14 +180,15 @@
                     <input type="hidden" name="id" id="editId">
 
                     <div class="mb-3">
-                        <label class="form-label">Group Name</label>
+                        <label class="form-label">Group Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" name="group_nm" id="editName" required>
                         <div id="GroupNameError" class="error"></div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="editLeader">Leader Name:</label>
+                        <label for="editLeader" class="form-label">Leader Name <span class="text-danger">*</span></label>
                         <select name="vid" id="editLeader" class="form-control" required>
+                            <option value="">-- Select Leader --</option>
                             {% for v in group_leaders %}
                                 <option value="{{ v.id }}">{{ v.volunteer_name }}</option>
                             {% endfor %}
@@ -115,14 +198,25 @@
 
                     <div class="mb-3">
                         <label class="form-label">Members</label>
-                        <textarea class="form-control" name="members" id="members" readonly rows="3"></textarea>
+                        <textarea class="form-control" name="members" id="members" readonly rows="3" style="background-color: #f7fafc;"></textarea>
+                        <small class="text-muted">Members are managed from the Add Members page</small>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle me-1"></i> Save Changes
+                        </button>
                     </div>
                 </form>
+
+                <!-- View Section Footer -->
+                <div id="viewSectionFooter" class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="switchToEdit()">
+                        <i class="bi bi-pencil me-1"></i> Edit Group
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -130,11 +224,11 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- ✅ Bootstrap JS (must be the BUNDLE version) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- ✅ Your custom JS code -->
 <script>
+let currentGroupData = {};
+
 document.querySelectorAll(".open-modal").forEach(btn => {
     btn.addEventListener("click", function () {
         let mode = this.dataset.mode;
@@ -145,41 +239,70 @@ document.querySelectorAll(".open-modal").forEach(btn => {
         let group_create = this.dataset.groupcreated;
         let group_update = this.dataset.groupupdated;
 
+        // Store data for potential edit switch
+        currentGroupData = {
+            id: id,
+            name: name,
+            leader: leader,
+            member: member,
+            group_create: group_create,
+            group_update: group_update
+        };
+
         if (mode === "view") {
-            document.getElementById("modalTitle").textContent = "View Group";
-            document.getElementById("viewSection").classList.remove("d-none");
-            document.getElementById("editSection").classList.add("d-none");
-
-            document.getElementById("viewName").textContent = name;
-            document.getElementById("viewLeader").textContent = leader;
-            document.getElementById("viewMembers").textContent = member;
-            document.getElementById("viewGroupCreatedDate").textContent = group_create;
-            document.getElementById("viewGroupUpdatedDate").textContent = group_update;
+            showViewMode(name, leader, member, group_create, group_update);
         } else if (mode === "edit") {
-            document.getElementById("modalTitle").textContent = "Edit Group";
-            document.getElementById("editSection").classList.remove("d-none");
-            document.getElementById("viewSection").classList.add("d-none");
-
-            document.getElementById("editId").value = id;
-            document.getElementById("editName").value = name;
-
-            let leaderDropdown = document.getElementById("editLeader");
-            for (let i = 0; i < leaderDropdown.options.length; i++) {
-                if (leaderDropdown.options[i].text === leader) {
-                    leaderDropdown.options[i].selected = true;
-                    break;
-                }
-            }
-            document.getElementById("members").value = member;
+            showEditMode(id, name, leader, member);
         }
 
         let modal = new bootstrap.Modal(document.getElementById("groupModal"));
         modal.show();
     });
 });
+
+function showViewMode(name, leader, member, group_create, group_update) {
+    document.getElementById("modalTitle").innerHTML = '<i class="bi bi-diagram-3 me-2"></i>View Group';
+    document.getElementById("viewSection").classList.remove("d-none");
+    document.getElementById("editSection").classList.add("d-none");
+    document.getElementById("viewSectionFooter").classList.remove("d-none");
+
+    document.getElementById("viewName").textContent = name;
+    document.getElementById("viewLeader").textContent = leader;
+    document.getElementById("viewMembers").textContent = member || "No members assigned";
+    document.getElementById("viewGroupCreatedDate").textContent = group_create || "N/A";
+    document.getElementById("viewGroupUpdatedDate").textContent = group_update || "N/A";
+}
+
+function showEditMode(id, name, leader, member) {
+    document.getElementById("modalTitle").innerHTML = '<i class="bi bi-pencil me-2"></i>Edit Group';
+    document.getElementById("editSection").classList.remove("d-none");
+    document.getElementById("viewSection").classList.add("d-none");
+    document.getElementById("viewSectionFooter").classList.add("d-none");
+
+    document.getElementById("editId").value = id;
+    document.getElementById("editName").value = name;
+
+    let leaderDropdown = document.getElementById("editLeader");
+    for (let i = 0; i < leaderDropdown.options.length; i++) {
+        if (leaderDropdown.options[i].text === leader) {
+            leaderDropdown.options[i].selected = true;
+            break;
+        }
+    }
+    document.getElementById("members").value = member || "";
+}
+
+function switchToEdit() {
+    if (currentGroupData.id) {
+        showEditMode(
+            currentGroupData.id,
+            currentGroupData.name,
+            currentGroupData.leader,
+            currentGroupData.member
+        );
+    }
+}
 </script>
 
-<!-- ✅ Link your custom JS last -->
 <script src="{% static 'js/myjs_script.js' %}"></script>
 {% endblock %}
-

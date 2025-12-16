@@ -33,22 +33,23 @@
 </form>
 
 <!-- Table -->
-<table class="table table-striped table-bordered mt-3">
-    <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Contact</th>
-            <th>Password</th>
-            <th>Role</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody id="volunteerResults">
-        {% include "volunteer_search_result.html" with volunteers=volunteers %}
-    </tbody>
-</table>
+<div class="table-responsive">
+  <table class="table table-striped table-bordered mt-3">
+      <thead class="table-dark">
+          <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Contact</th>
+              <th>Role</th>
+              <th>Action</th>
+          </tr>
+      </thead>
+      <tbody id="volunteerResults">
+          {% include "volunteer_search_result.html" with volunteers=volunteers %}
+      </tbody>
+  </table>
+</div>
 
 </div>
 {% endblock %}

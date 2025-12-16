@@ -6,11 +6,14 @@
 
 {% block content %}
 <div class="container-fluid">
-  <h2 class="mb-4">Update Volunteer</h2>
+  <h1>Update Volunteer</h1>
 
   {% if messages %}
     {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
     {% endfor %}
   {% endif %}
 
@@ -54,8 +57,10 @@
       </div>
     {% endfor %}
 
-    <button type="submit" class="btn btn-primary mt-3">Update</button>
-    <a href="{% url 'see_volunteers' %}" class="btn btn-secondary mt-3">Back</a>
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-primary">Update</button>
+      <a href="{% url 'see_volunteers' %}" class="btn btn-secondary">Back</a>
+    </div>
   </form>
 </div>
 {% endblock %}

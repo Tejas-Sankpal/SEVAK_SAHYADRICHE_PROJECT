@@ -6,10 +6,7 @@
 {% block content %}
 
 <div class="container-fluid">
-
-<h1>Update Task</h1>
-
-<br>
+  <h1>Update Task</h1>
   {% if messages %}
     {% for message in messages %}
       <div class="alert alert-{{ message.tags }}">{{ message }}</div>
@@ -67,7 +64,10 @@
 
   <input type="hidden" name="task_status" value="Pending">
 
-  <button type="submit" class="btn btn-primary mt-3">Update Task</button>
+  <div class="d-flex gap-2 mt-4">
+    <button type="submit" class="btn btn-primary">Update Task</button>
+    <a href="{% url 'see_assigned_task' %}" class="btn btn-secondary">Back</a>
+  </div>
 {% endfor %}
 </form>
 </div>

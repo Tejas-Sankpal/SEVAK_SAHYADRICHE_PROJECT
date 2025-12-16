@@ -1,61 +1,147 @@
 {% load static %}
-<div id="sidebar" class="sidebar">
-  <ul class="nav flex-column">
-    <li class="nav-item">
-      <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
-    </li>
+<aside id="sidebar" class="sidebar" role="navigation" aria-label="Main navigation">
+  <nav>
+    <ul class="nav flex-column">
+      <!-- Dashboard -->
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard" aria-label="Dashboard">
+          <i class="bi bi-speedometer2"></i>
+          <span>Dashboard</span>
+        </a>
+      </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href="#" onclick="toggleDropdown(event, 'members')"><i class="bi bi-people-fill"></i><span>Members</span></a>
-      <div id="members" class="submenu">
-        <a class="nav-link" href="/set_volunteer/">Add Members</a>
-        <a class="nav-link" href="{% url 'see_volunteers' %}">Members List</a>
-        <a class="nav-link" href="/see_members_with_group/">Available Members</a>
-      </div>
-    </li>
+      <!-- Members Section -->
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="toggleDropdown(event, 'members'); return false;" 
+           aria-expanded="false" aria-haspopup="true" aria-controls="members">
+          <i class="bi bi-people-fill"></i>
+          <span>Members</span>
+          <i class="bi bi-chevron-down ms-auto submenu-arrow" aria-hidden="true"></i>
+        </a>
+        <div id="members" class="submenu" role="menu">
+          <a class="nav-link" href="/set_volunteer/" role="menuitem">
+            <i class="bi bi-person-plus"></i>
+            <span>Add Members</span>
+          </a>
+          <a class="nav-link" href="{% url 'see_volunteers' %}" role="menuitem">
+            <i class="bi bi-people"></i>
+            <span>Members List</span>
+          </a>
+          <a class="nav-link" href="/see_members_with_group/" role="menuitem">
+            <i class="bi bi-person-check"></i>
+            <span>Available Members</span>
+          </a>
+        </div>
+      </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href="#" onclick="toggleDropdown(event, 'groupmang')"><i class="bi bi-diagram-3"></i><span>Group Manage</span></a>
-      <div id="groupmang" class="submenu">
-        <a class="nav-link" href="{% url 'create_group' %}">Add Group</a>
-        <a class="nav-link" href="/group_see/">Group List</a>
-      </div>
-    </li>
+      <!-- Group Management Section -->
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="toggleDropdown(event, 'groupmang'); return false;" 
+           aria-expanded="false" aria-haspopup="true" aria-controls="groupmang">
+          <i class="bi bi-diagram-3"></i>
+          <span>Group Manage</span>
+          <i class="bi bi-chevron-down ms-auto submenu-arrow" aria-hidden="true"></i>
+        </a>
+        <div id="groupmang" class="submenu" role="menu">
+          <a class="nav-link" href="{% url 'create_group' %}" role="menuitem">
+            <i class="bi bi-plus-circle"></i>
+            <span>Add Group</span>
+          </a>
+          <a class="nav-link" href="/group_see/" role="menuitem">
+            <i class="bi bi-list-ul"></i>
+            <span>Group List</span>
+          </a>
+        </div>
+      </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href="#" onclick="toggleDropdown(event, 'task')"><i class="bi bi-tools"></i><span>Task</span></a>
-      <div id="task" class="submenu">
-        <a class="nav-link" href="{% url 'create_task' %}">Add Task</a>
-        <a class="nav-link" href="{% url 'see_assigned_task' %}">Task List</a>
-      </div>
-    </li>
+      <!-- Task Section -->
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="toggleDropdown(event, 'task'); return false;" 
+           aria-expanded="false" aria-haspopup="true" aria-controls="task">
+          <i class="bi bi-tools"></i>
+          <span>Task</span>
+          <i class="bi bi-chevron-down ms-auto submenu-arrow" aria-hidden="true"></i>
+        </a>
+        <div id="task" class="submenu" role="menu">
+          <a class="nav-link" href="{% url 'create_task' %}" role="menuitem">
+            <i class="bi bi-plus-square"></i>
+            <span>Add Task</span>
+          </a>
+          <a class="nav-link" href="{% url 'see_assigned_task' %}" role="menuitem">
+            <i class="bi bi-list-task"></i>
+            <span>Task List</span>
+          </a>
+        </div>
+      </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href="#" onclick="toggleDropdown(event, 'role')"><i class="bi bi-person-gear"></i><span>Role</span></a>
-      <div id="role" class="submenu">
-        <a class="nav-link" href="{% url 'set_role' %}">Add Role</a>
-        <a class="nav-link" href="{% url 'see_role' %}">Role List</a>
-      </div>
-    </li>
+      <!-- Role Section -->
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="toggleDropdown(event, 'role'); return false;" 
+           aria-expanded="false" aria-haspopup="true" aria-controls="role">
+          <i class="bi bi-person-gear"></i>
+          <span>Role</span>
+          <i class="bi bi-chevron-down ms-auto submenu-arrow" aria-hidden="true"></i>
+        </a>
+        <div id="role" class="submenu" role="menu">
+          <a class="nav-link" href="{% url 'set_role' %}" role="menuitem">
+            <i class="bi bi-person-plus"></i>
+            <span>Add Role</span>
+          </a>
+          <a class="nav-link" href="{% url 'see_role' %}" role="menuitem">
+            <i class="bi bi-list-ul"></i>
+            <span>Role List</span>
+          </a>
+        </div>
+      </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href="#" onclick="toggleDropdown(event, 'notify')"><i class="bi bi-bell-fill"></i><span>Notification</span></a>
-      <div id="notify" class="submenu">
-        <a class="nav-link" href="{% url 'notification' %}">Give Notification</a>
-        <a class="nav-link" href="{% url 'see_notification' %}">Notification List</a>
-      </div>
-    </li>
+      <!-- Notification Section -->
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="toggleDropdown(event, 'notify'); return false;" 
+           aria-expanded="false" aria-haspopup="true" aria-controls="notify">
+          <i class="bi bi-bell-fill"></i>
+          <span>Notification</span>
+          <i class="bi bi-chevron-down ms-auto submenu-arrow" aria-hidden="true"></i>
+        </a>
+        <div id="notify" class="submenu" role="menu">
+          <a class="nav-link" href="{% url 'notification' %}" role="menuitem">
+            <i class="bi bi-send"></i>
+            <span>Give Notification</span>
+          </a>
+          <a class="nav-link" href="{% url 'see_notification' %}" role="menuitem">
+            <i class="bi bi-bell"></i>
+            <span>Notification List</span>
+          </a>
+        </div>
+      </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href=""><i class="bi bi-person-circle"></i><span>Account</span></a>
-    </li>
+      <!-- Divider -->
+      <li class="nav-item sidebar-divider" role="separator">
+        <hr class="sidebar-hr">
+      </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href="{% url 'update_profile' %}"><i class="fas fa-user-edit"></i><span>Profile Update</span></a>
-    </li>
+      <!-- Account Section -->
+      <li class="nav-item">
+        <a class="nav-link" href="" aria-label="Account">
+          <i class="bi bi-person-circle"></i>
+          <span>Account</span>
+        </a>
+      </li>
 
-    <li class="nav-item">
-      <a class="nav-link" href=""><i class="fa-solid fa-clipboard-check"></i><span>Report</span></a>
-    </li>
-  </ul>
-</div>
+      <!-- Profile Update -->
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'update_profile' %}" aria-label="Update Profile">
+          <i class="fas fa-user-edit"></i>
+          <span>Profile Update</span>
+        </a>
+      </li>
+
+      <!-- Report -->
+      <li class="nav-item">
+        <a class="nav-link" href="" aria-label="Report">
+          <i class="fa-solid fa-clipboard-check"></i>
+          <span>Report</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>

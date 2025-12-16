@@ -986,4 +986,49 @@ document.addEventListener('DOMContentLoaded', function () {
             // allow form to submit normally (server will process)
         });
     }
+
+    // ===================================================================
+    // AUTO-ADD DATA-LABEL ATTRIBUTES FOR RESPONSIVE TABLE STACKING
+    // ===================================================================
+    function addDataLabelsToTables() {
+        document.querySelectorAll('body:not(.page--auth) table').forEach(function(table) {
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
+            
+            if (!thead || !tbody) return;
+            
+            const headers = Array.from(thead.querySelectorAll('th'));
+            
+            if (headers.length === 0) return;
+            
+            tbody.querySelectorAll('tr').forEach(function(row) {
+                const cells = Array.from(row.querySelectorAll('td'));
+                cells.forEach(function(cell, index) {
+                    if (headers[index]) {
+                        const headerText = headers[index].textContent.trim();
+                        if (headerText && !cell.hasAttribute('data-label')) {
+                            cell.setAttribute('data-label', headerText);
+                        }
+                    }
+                });
+            });
+        });
+    }
+    
+    // Run on page load
+    addDataLabelsToTables();
+    
+    // Re-run when dynamic content is loaded (for AJAX tables)
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.addedNodes.length) {
+                addDataLabelsToTables();
+            }
+        });
+    });
+    
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
 });

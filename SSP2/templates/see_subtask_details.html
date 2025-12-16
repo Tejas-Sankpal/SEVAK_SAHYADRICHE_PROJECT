@@ -1,0 +1,55 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}Update Subtask Status{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <h1>Details of Subtask</h1>
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+<br>
+
+<!-- update the task status form -->
+<form action="{% url 'update_subtask_status' %}" method="post" >
+  {% csrf_token %}
+
+  {% for data in subtask_data %}
+  <input type="hidden" name="subtask_id" value="{{ data.id }}">
+  <div class="mb-3">
+      <label for="task_title">Task Title:</label>
+      <input type="text" name="task_title" class="form-control" value="{{ data.task_id.task_title }}" readonly>
+    </div>
+
+  <div class="mb-3">
+    <label for="task_description">Task Description:</label>
+    <textarea name="task_description" class="form-control" rows="3" readonly>{{ data.subtask_description }}</textarea>
+  </div>
+
+  <div class="mb-3">
+    <label for="task_status">Change Status:</label>
+    <select id="task_status" name="task_status" class="form-control">
+      {% for status in status_choices %}
+        <option value="{{ status }}"
+          {% if status == data.subtask_status %} selected {% endif %}>
+          {{ status }}
+        </option>
+      {% endfor %}
+    </select>
+
+  </div>
+
+  <div class="d-flex gap-2 mt-4">
+    <button type="submit" class="btn btn-primary">Update Status</button>
+    <a href="{% url 'see_assigned_task' %}" class="btn btn-secondary">Back</a>
+  </div>
+  {% endfor %}
+</form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+{% endblock %}

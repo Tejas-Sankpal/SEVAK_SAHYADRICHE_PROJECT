@@ -3,12 +3,18 @@
     <td>{{ forloop.counter }}</td>
     <td>{{ task.task_title }}</td>
     <td>{{ task.Group.group_name }}</td>
+    <td>
+        <span class="badge {% if task.task_status == 'Completed' %}bg-success{% elif task.task_status == 'In Progress' %}bg-info{% elif task.task_status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+            {{ task.task_status }}
+        </span>
+    </td>
     <td>{{ task.task_created_at|date:"d M Y" }}</td>
-    <td>{{ task.task_status }}</td>
     <td>{{ task.task_reject_reason }}</td>
     <td>
-        <a href="{% url 'task_update' task.id %}" class="btn btn-sm btn-secondary">Edit</a>
-        <a href="{% url 'task_delete' task.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+        <div class="d-flex gap-2">
+            <a href="{% url 'task_update' task.id %}" class="btn btn-sm btn-secondary">Edit</a>
+            <a href="{% url 'task_delete' task.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+        </div>
     </td>
 </tr>
 {% empty %}

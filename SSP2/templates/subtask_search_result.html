@@ -1,0 +1,27 @@
+{% for member in sub_tasks %}
+<tr class="clickable-row" data-href="{% url 'see_subtask_details' member.id %}">
+    <td>{{ forloop.counter }}</td>
+    <td>{{ member.task_id.task_title }}</td>
+    <td>{{ member.assigned_subtask_to.volunteer.volunteer_name }}</td>
+    <td>
+        <span class="badge
+        {% if member.subtask_status == 'Completed' %}bg-success
+        {% elif member.subtask_status == 'In Progress' %}bg-info
+        {% elif member.subtask_status == 'Rejected' %}bg-danger
+        {% else %}bg-warning{% endif %}">
+            {{ member.subtask_status }}
+        </span>
+    </td>
+    <td>{{ member.subtask_created_at }}</td>
+    <td>{{ member.subtask_updated_at }}</td>
+    <td>
+        <a href="{% url 'update_subtask' member.id %}" class="btn btn-sm btn-secondary">Edit</a>
+        <a href="{% url 'delete_subtask' member.id %}" class="btn btn-sm btn-danger"
+           onclick="return confirm('Are you sure?')">Delete</a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="7" class="text-center">No subtasks found</td>
+</tr>
+{% endfor %}

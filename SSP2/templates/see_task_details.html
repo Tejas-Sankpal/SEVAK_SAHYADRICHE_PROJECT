@@ -1,113 +1,156 @@
 {% extends 'dashboard.html' %}
 {% load static %}
 
+{% block title %}Update Task Status{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
 
-<h1>Details of Task</h1>
+  <h1 class="mb-4">Details of Task</h1>
 
-<br>
-{% if messages %}
-  {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-  {% endfor %}
-{% endif %}
-<br>
+  <!-- Messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
 
-<form action="{% url 'update_task_status' %}" method="post" id="AdminTaskAssign">
-  {% csrf_token %}
+  <!-- ================= TASK STATUS FORM ================= -->
+  <form action="{% url 'update_task_status' %}" method="post" id="AdminTaskAssign">
+    {% csrf_token %}
 
-  {% for data in data %}
-  <input type="hidden" name="tid" value="{{ data.id }}">
+    <input type="hidden" name="tid" value="{{ task.id }}">
 
-  <div class="mb-3">
-    <label for="task_title">Task Title:</label>
-    <input type="text" name="task_title" class="form-control" value="{{ data.task_title }}" readonly>
+    <div class="mb-3">
+      <label class="form-label">Task Title</label>
+      <input type="text" class="form-control" value="{{ task.task_title }}" readonly>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Task Description</label>
+      <textarea class="form-control" rows="3" readonly>{{ task.task_description }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Change Status</label>
+
+      <p class="mb-2">
+        <strong>Current Status:</strong>
+        <span class="badge
+          {% if task.task_status == 'Completed' %}bg-success
+          {% elif task.task_status == 'In Progress' %}bg-info
+          {% elif task.task_status == 'Rejected' %}bg-danger
+          {% else %}bg-warning{% endif %}">
+          {{ task.task_status }}
+        </span>
+      </p>
+
+      <select name="task_status" id="task_status" class="form-control">
+        {% for status in status_choices %}
+          <option value="{{ status }}"
+            {% if status == task.task_status %}selected{% endif %}>
+            {{ status }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Reject Reason -->
+    <div class="mb-3 d-none" id="rejectReasonContainer">
+      <label class="form-label">
+        Rejection Reason <span class="text-danger">*</span>
+      </label>
+      <textarea name="task_reject_reason" id="task_reject_reason"
+                class="form-control" rows="3"></textarea>
+      <small class="text-danger" id="rejectError"></small>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-primary">Update Task</button>
+      <a href="{% url 'see_assigned_task' %}" class="btn btn-secondary">Back</a>
+    </div>
+  </form>
+
+  <!-- ================= SUB TASK SECTION ================= -->
+  <div class="mt-5 pt-4 border-top d-none" id="createSubtaskContainer">
+    <h2>Create Sub Task</h2>
+
+    <form action="{% url 'assign_task_to_members' %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="task_id" value="{{ task.id }}">
+
+      <div class="mb-3">
+        <label class="form-label">Sub Task Description</label>
+        <textarea name="subtask_description" class="form-control" required></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Assign To</label>
+        <select name="subtask_assign_to" class="form-control" required>
+          {% for member in Group_Members %}
+            <option value="{{ member.id }}">
+              {{ member.volunteer.volunteer_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <input type="hidden" name="subtask_status" value="Pending">
+
+      <button type="submit" class="btn btn-success">Create Subtask</button>
+    </form>
   </div>
-
-  <div class="mb-3">
-    <label for="task_description">Task Description:</label>
-    <textarea name="task_description" class="form-control" rows="3" readonly>{{ data.task_description }}</textarea>
-  </div>
-
-  <div class="mb-3">
-    <label for="task_status">Change Status:</label>
-    <select id="task_status" name="task_status" class="form-control">
-      {% for status in status_choices %}
-        <option value="{{ status }}"
-          {% if status == data.task_status %} selected {% endif %}>
-          {{ status }}
-        </option>
-      {% endfor %}
-    </select>
-
-  </div>
-
-  <div class="mb-3" id="rejectReasonContainer" style="display: none;">
-    <label for="task_reject_reason">Rejection Reason:</label>
-    <textarea name="task_reject_reason" id="task_reject_reason"
-              class="form-control" rows="3">{{ data.task_reject_reason }}</textarea>
-    <div id="taskRejectError" class="error"></div>
-  </div>
-
-  <button type="submit" class="btn btn-primary">Update Task</button>
-  {% endfor %}
-</form>
 
 </div>
 {% endblock %}
 
 {% block extra_js %}
 {{ block.super }}
+
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("AdminTaskAssign");
+document.addEventListener("DOMContentLoaded", function () {
+
     const statusSelect = document.getElementById("task_status");
     const rejectBox = document.getElementById("rejectReasonContainer");
     const rejectInput = document.getElementById("task_reject_reason");
-    const errorEl = document.getElementById("taskRejectError");
+    const rejectError = document.getElementById("rejectError");
+    const subtaskBox = document.getElementById("createSubtaskContainer");
+    const form = document.getElementById("AdminTaskAssign");
 
-    function toggleRejectBox() {
+    function updateUI() {
+
+        // Rejected → show reason
         if (statusSelect.value === "Rejected") {
-            rejectBox.style.display = "block";
+            rejectBox.classList.remove("d-none");
         } else {
-            rejectBox.style.display = "none";
+            rejectBox.classList.add("d-none");
             rejectInput.value = "";
-            errorEl.textContent = "";
+            rejectError.textContent = "";
+        }
+
+        // In-Progress → show subtask
+        if (statusSelect.value === "In-Progress") {
+            subtaskBox.classList.remove("d-none");
+        } else {
+            subtaskBox.classList.add("d-none");
         }
     }
 
-    function validateRejectReason() {
-        if (statusSelect.value === "Rejected") {
-            if (rejectInput.value.trim() === "") {
-                errorEl.textContent = "Reject Reason is required";
-                return false;
-            }
-        }
-        errorEl.textContent = "";
-        return true;
-    }
-
-    // Toggle when status changes
-    statusSelect.addEventListener("change", function() {
-        toggleRejectBox();
-        validateRejectReason();
-    });
-
-    // Validate while typing
-    rejectInput.addEventListener("input", validateRejectReason);
-
-    // Validate on form submit
-    form.addEventListener("submit", function(e){
-        if (!validateRejectReason()) {
+    form.addEventListener("submit", function (e) {
+        if (statusSelect.value === "Rejected" && rejectInput.value.trim() === "") {
+            rejectError.textContent = "Rejection reason is required.";
             e.preventDefault();
         }
     });
 
-    // If page loads with rejected status → show box
-    toggleRejectBox();
+    statusSelect.addEventListener("change", updateUI);
+
+    updateUI(); // run on page load
 });
-
-
 </script>
+
+
 {% endblock %}

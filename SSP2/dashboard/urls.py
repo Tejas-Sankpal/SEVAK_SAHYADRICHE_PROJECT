@@ -29,6 +29,10 @@ urlpatterns = [
     path("see_volunteers/", views.see_volunteers, name="see_volunteers"),
     path("volunteer_search_result/", views.volunteer_search_result, name="volunteer_search_result"),
     path('see_member_details/<int:mem_id>/', views.see_member_details, name='see_member_details'),
+    path('see_subtask_details/<int:member_id>/', views.see_subtask_details, name= 'see_subtask_details'),
+    path('update_subtask/<int:member_id>/', views.update_subtask, name= 'update_subtask'),
+    path('subtask_search_result/', views.subtask_search_result, name='subtask_search_result'),
+
 
 
 
@@ -54,5 +58,9 @@ urlpatterns = [
     path('notifications/load/', views.load_notifications, name= 'load_notifications'),
     path('notifications/read/', views.mark_notification_read, name= 'mark_notification_read'),
     path('update_task_status/', views.update_task_status, name= 'update_task_status'),
+    path('assign_task_to_members/', views.assign_task_to_members, name= 'assign_task_to_members'),
+    path('update_subtask_status/', views.update_subtask_status, name= 'update_subtask_status'),
+    path('update_assign_subtask_to_member/', views.update_assign_subtask_to_member, name='update_assign_subtask_to_member'),
     path('logout/', views.logout, name='logout'),
+    path('delete_subtask/<int:member_id>/', views.delete_subtask, name= 'delete_subtask'),
 ]

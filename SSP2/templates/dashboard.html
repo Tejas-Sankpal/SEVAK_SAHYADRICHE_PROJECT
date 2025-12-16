@@ -33,10 +33,12 @@
   <!-- Main Content -->
   <div class="main-content" id="mainContent">
     {% block content %}
-    <h2>Welcome, Admin 👋</h2>
-    <p class="text-muted">Dashboard overview content goes here.</p>
-    <!-- Counter Boxes Row -->
-  <div class="row g-4">
+    <div class="container-fluid">
+      <h1>Welcome, Admin 👋</h1>
+      <p class="text-muted mb-4">Dashboard overview and statistics</p>
+      
+      <!-- Counter Boxes Row -->
+      <div class="row g-4">
     <div class="col-md-3 col-sm-6">
       <div class="counter-box shadow-sm">
         <i class="bi bi-people-fill"></i>
@@ -68,8 +70,8 @@
         <p>Total Groups</p>
       </div>
     </div>
-  </div>
-  </div>
+    </div>
+    </div>
   {% endblock %}
 
  {% block extra_js %}
